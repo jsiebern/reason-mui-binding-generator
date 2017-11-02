@@ -1,0 +1,5 @@
+*.swp
+
+.merlin
+_build
+node_modules

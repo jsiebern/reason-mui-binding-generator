@@ -1,0 +1,14 @@
+{
+  "presets": [
+    "env",
+    "stage-1",
+    "react",
+    "next/babel"
+  ],
+  "plugins": [
+    "preval",
+    "transform-object-assign",
+    "flow-react-proptypes",
+    "transform-flow-strip-types"
+  ]
+}
