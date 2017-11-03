@@ -1,27 +1,27 @@
 {
-  "name": "reason-mui-binding-generator",
-  "version": "0.0.1",
-  "description": "Reason binding generator for material-ui v1",
-  "scripts": {
-    "extract": "babel-node ./scripts/extract.js",
-    "extractx": "./extract.sh"
-  },
-  "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
-  "author": "Jonathan Siebern <jsiebern88@gmail.com>",
-  "license": "MIT",
-  "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-flow-react-proptypes": "^7.0.1",
-    "babel-plugin-preval": "^1.6.2",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-plugin-transform-object-assign": "^6.22.0",
-    "babel-preset-env": "^1.6.1",
-    "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-1": "^6.24.1",
-    "fs": "^0.0.1-security",
-    "material-ui": "next",
-    "next": "^4.1.4",
-    "path": "^0.12.7",
-    "react-docgen": "^3.0.0-beta8"
-  }
+    "name": "reason-mui-binding-generator",
+    "version": "0.0.1",
+    "description": "Reason binding generator for material-ui v1",
+    "scripts": {
+        "extract": "babel-node ./scripts/extract.js",
+        "refmt": "refmt --in-place output/*.re; refmt --in-place --interface=true output/MaterialUi.rei; refmt --in-place --interface=true output/MaterialUiBundled.rei"
+    },
+    "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
+    "author": "Jonathan Siebern <jsiebern88@gmail.com>",
+    "license": "MIT",
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-plugin-flow-react-proptypes": "^7.0.1",
+        "babel-plugin-preval": "^1.6.2",
+        "babel-plugin-transform-flow-strip-types": "^6.22.0",
+        "babel-plugin-transform-object-assign": "^6.22.0",
+        "babel-preset-env": "^1.6.1",
+        "babel-preset-react": "^6.24.1",
+        "babel-preset-stage-1": "^6.24.1",
+        "fs": "^0.0.1-security",
+        "material-ui": "next",
+        "next": "^4.1.4",
+        "path": "^0.12.7",
+        "react-docgen": "^3.0.0-beta8"
+    }
 }

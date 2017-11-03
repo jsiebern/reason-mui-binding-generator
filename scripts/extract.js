@@ -1,3 +1,4 @@
+import path from 'path';
 import { mkdir, readFileSync, writeFileSync } from 'fs';
 import kebabCase from 'lodash/kebabCase';
 import * as reactDocgen from 'react-docgen';
@@ -10,7 +11,7 @@ import ensureExists from './ensure-folder-exists';
 const components = findComponents();
 const theme = createMuiTheme();
 const rootDirectory = path.resolve('/Users/jonathansiebern/git/_fork/material-ui');
-const outputDirectory = path.join(__dirname, '../', 'output');
+const outputDirectory = path.join(__dirname, '../', 'output', 'json');
 
 components.forEach(componentPath => {
     const src = readFileSync(componentPath, 'utf8');

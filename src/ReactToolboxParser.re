@@ -314,7 +314,11 @@ let build_properties = (module_name, props_json) => {
               | (true, true) => Component.Type.Union([enum_type, ...mapped_types])
               | (false, false) => Component.Type.map_type("intrinsic", "any", false)
               };
-            if (is_optional) {Component.Type.Option(union_type)} else {union_type}
+            if (is_optional) {
+              Component.Type.Option(union_type)
+            } else {
+              union_type
+            }
           } else if (type_category == "intersection") {
             Component.Type.map_type("intrinsic", "any", is_optional)
           } else if (type_category == "array") {
@@ -323,12 +327,20 @@ let build_properties = (module_name, props_json) => {
             let type_name = element_type_json |> member("name") |> to_string;
             let element_type = Component.Type.map_type(type_category, type_name, false);
             let array_type = Component.Type.Array(element_type);
-            if (is_optional) {Component.Type.Option(array_type)} else {array_type}
+            if (is_optional) {
+              Component.Type.Option(array_type)
+            } else {
+              array_type
+            }
           } else {
             let type_name = prop_json |> member("type") |> member("name") |> to_string;
             if (Component.Type.is_callback(type_category, type_name, name)) {
               let callback_type = get_callback_type(name, module_name);
-              if (is_optional) {Component.Type.Option(callback_type)} else {callback_type}
+              if (is_optional) {
+                Component.Type.Option(callback_type)
+              } else {
+                callback_type
+              }
             } else {
               Component.Type.map_type(type_category, type_name, is_optional)
             }
