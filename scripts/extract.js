@@ -47,9 +47,16 @@ components.forEach(componentPath => {
     reactAPI.filename = componentPath.replace(rootDirectory, '');
     reactAPI.importPath = `material-ui/${componentPath.replace(`${rootDirectory}/src/`, '').replace('.js', '')}`;
 
+    // Inheritance
+    const inheritedComponentRegexp = /\/\/ @inheritedComponent (.*)/;
+    const inheritedComponent = src.match(inheritedComponentRegexp);
+    const inheritsFrom = !inheritedComponent ? '' : inheritedComponent[1];
+    reactAPI.inheritsFrom = inheritsFrom;
+
     ensureExists(outputDirectory, 0o744, err => {
         if (err) {
             console.log('Error creating directory', outputDirectory);
+            console.log(err);
             return;
         }
 

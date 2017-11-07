@@ -3,3 +3,4 @@
 .merlin
 _build
 node_modules
+*.install

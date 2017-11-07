@@ -33,6 +33,7 @@ module Type: {
     | Array(t)
     | Union(list(t));
   let is_callback: (string, string) => bool;
+  let is_signature: string => bool;
   let map_type: (string, bool) => t;
   /* let map_type: (string, string, bool) => t; */
   let to_string: (ref(int), t) => string;
@@ -54,5 +55,6 @@ module Property: {
 type t = {
   name: string,
   module_path: string,
-  properties: list(Property.t)
+  properties: list(Property.t),
+  inheritsFrom: string
 };

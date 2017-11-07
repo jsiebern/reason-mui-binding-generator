@@ -38,18 +38,25 @@ module Type = {
       Str.string_match(regex, props_name, 0)
     };
     switch type_name {
-    | "signature" when is_name_valid => true
+    | "Function" when is_name_valid => true
     | _ => false
     }
   };
+  let is_signature = (type_name) =>
+    switch type_name {
+    | "signature" => true
+    | _ => false
+    };
   let map_type = (type_name, is_optional) => {
     let t =
       switch type_name {
       | "string"
       | "String" => String
-      | "number" => Number
+      | "number"
+      | "float" => Number
       | "boolean" => Bool
-      | "any" => Any
+      | "any"
+      | "$ReadOnlyArray" => Any
       | "Node"
       | "React.ReactNode" => Element
       | "CSSProperties" => Style
@@ -258,13 +265,13 @@ module Property = {
   };
   let get_callback_type = (name) =>
     try (Hashtbl.find(standard_callbacks, name)) {
-    /* | Not_found => failwith("get_callback_type: " ++ (name ++ " not found")) */
-    | Not_found => Type.GenericCallback
+    | Not_found => failwith("get_callback_type: " ++ (name ++ " not found"))
     };
 };
 
 type t = {
   name: string,
   module_path: string,
-  properties: list(Property.t)
+  properties: list(Property.t),
+  inheritsFrom: string
 };

@@ -2,9 +2,11 @@ let has_theme_property = (properties) =>
   List.exists((p) => p.Component.Property.name == "theme", properties);
 
 let clean_parameter_name = (name) => {
-  let keywords = ["type", "to"];
+  let first = String.sub(name, 0, 1);
+  let name = first == String.uppercase(first) ? String.lowercase(first) ++ name : name;
+  let keywords = ["type", "to", "open", "in"];
   if (List.mem(name, keywords)) {
-    "_" ++ name
+    name ++ "_"
   } else {
     name
   }
@@ -52,48 +54,55 @@ let write_enum_implementations = (oc, properties) => {
   let enums = get_enums(properties);
   List.iter(
     fun
-    | Component.Type.Enum({name, values}) =>
-      Printf.fprintf(
-        oc,
-        "module %s = { type t = | %s; let to_string = fun | %s; };\n",
-        name,
-        build_enum_type_declaration(values),
-        build_to_string(values)
-      )
+    | Component.Type.Enum({name, values}) => {
+        print_endline("--> Enum( " ++ build_enum_type_declaration(values) ++ " )");
+        Printf.fprintf(
+          oc,
+          "module %s = { type t = | %s; let to_string = fun | %s; };\n",
+          name,
+          build_enum_type_declaration(values),
+          build_to_string(values)
+        )
+      }
     | _ => assert false,
     enums
   )
 };
 
 let build_props_arg = (properties) => {
+  print_endline("_Building Prop Args");
   let any_counter = ref(0);
   let prop_to_string = (property) => {
     let name = clean_parameter_name(property.Component.Property.name);
     let type_string =
       Component.Type.to_string(any_counter, property.Component.Property.property_type);
+    print_endline("--> Prop '" ++ name ++ "' (" ++ type_string ++ ")");
     let optional_prop_string =
       if (Component.Type.is_option(property.Component.Property.property_type)) {
         "=?"
       } else {
         ""
       };
-    Printf.sprintf("~%s: %s%s", name, type_string, optional_prop_string)
+    Printf.sprintf("~%s: %s%s", clean_parameter_name(name), type_string, optional_prop_string)
   };
   let prop_strings = List.map(prop_to_string, properties);
   String.concat(", ", prop_strings)
 };
 
 let build_js_props = (properties) => {
+  print_endline("_Building Js Props");
   let prop_to_string = (property) => {
-    let rec convert = (property_type, property_name) =>
+    let rec convert = (property_type, property_name) => {
+      let property_name = clean_parameter_name(property_name);
       Component.Type.(
         switch property_type {
         | Bool => "Js.Boolean.to_js_boolean, " ++ property_name
         | Date
         | String
+        | Number
         | Object
         | Any => property_name
-        | Enum({name, _}) => Printf.sprintf("%s.to_string(%s)", name, property_name)
+        | Enum({name, _}) => Printf.sprintf("%s.to_string, %s", name, property_name)
         | Array(Bool as t) =>
           Printf.sprintf("Array.map((x) => %s), %s", convert(t, "x"), property_name)
         | Array(_) => property_name
@@ -108,7 +117,7 @@ let build_js_props = (properties) => {
                )
             |> List.hd;
           Printf.sprintf(
-            "(fun | `Enum(e) => unwrapValue(`String(%s.to_string(e))) | x => unwrapValue(x)), %s",
+            "(fun | `Enum(e) => unwrapValue(`String(%s.to_string(e))) | x => unwrapValue(x))(%s)",
             enum.Component.Type.name,
             property_name
           )
@@ -118,9 +127,11 @@ let build_js_props = (properties) => {
         | Option(Union(_) as t) =>
           Printf.sprintf("Js.Nullable.from_opt(optionMap(%s))", convert(t, property_name))
         | Option(_) => "Js.Nullable.from_opt(" ++ (property_name ++ ")")
-        | _ => failwith("prop_to_string: " ++ Component.Type.to_string(ref(0), property_type))
+        | _ => property_name
+        /* | _ => failwith("prop_to_string: " ++ Component.Type.to_string(ref(0), property_type)) */
         }
-      );
+      )
+    };
     Printf.sprintf(
       "\"%s\": %s",
       property.Component.Property.name,
@@ -136,6 +147,7 @@ let build_js_props = (properties) => {
 
 let write_component_implementation = (bundled, oc, component) => {
   let module_path = component.Component.module_path;
+  print_endline("Writing " ++ module_path);
   let (external_module_path, module_name) =
     if (bundled && has_theme_property(component.Component.properties)) {
       let len = String.length(module_path);
@@ -154,7 +166,9 @@ let write_component_implementation = (bundled, oc, component) => {
       (module_path, "default")
     };
   Printf.fprintf(oc, "module %s = {\n", component.Component.name);
+  print_endline("_Start Enums");
   write_enum_implementations(oc, component.Component.properties);
+  print_endline("_Finished Enums");
   Printf.fprintf(
     oc,
     "[@bs.module \"%s\"] external reactClass : ReasonReact.reactClass = \"%s\";\nlet make = (%s, children) => \nReasonReact.wrapJsForReason(~reactClass=reactClass, ~props={%s}, children);\n};\n",
@@ -171,12 +185,6 @@ let write_re = (~bundled, path, component_list) => {
     oc,
     "type jsUnsafe;\nexternal toJsUnsafe : 'a => jsUnsafe = \"%%identity\";\nlet unwrapValue = fun | `String(s) => toJsUnsafe(s) | `Bool(b) => toJsUnsafe(Js.Boolean.to_js_boolean(b)) | `Float(f) => toJsUnsafe(f) | `Date(d) => toJsUnsafe(d) | `Callback(c) => toJsUnsafe(c) | `Element(e) => toJsUnsafe(e) | `Object(o) => toJsUnsafe(o) | `Enum(_) => assert false;\nlet optionMap = (fn, option) => switch option { | Some((value)) => Some(fn(value)) | None => None };\n\n"
   );
-  if (! bundled) {
-    Printf.fprintf(
-      oc,
-      "module ThemeProvider = {\ntype theme;\n[@bs.module \"react-css-themr/lib/index\"] external themeProvider : ReasonReact.reactClass = \"ThemeProvider\";\nlet make = (~theme: theme, children) => ReasonReact.wrapJsForReason(~reactClass=themeProvider, ~props={\"theme\": theme}, children);\n};\n"
-    )
-  };
   List.iter(write_component_implementation(bundled, oc), component_list);
   close_out(oc)
 };
@@ -247,12 +255,6 @@ let write_component_signature = (oc, component) => {
 
 let write_rei = (~bundled, path, component_list) => {
   let oc = open_out(path);
-  if (! bundled) {
-    Printf.fprintf(
-      oc,
-      "module ThemeProvider: {\ntype theme;\nlet make:(~theme: theme, array(ReasonReact.reactElement)) => ReasonReact.component(ReasonReact.stateless, ReasonReact.noRetainedProps, ReasonReact.actionless);\n};\n"
-    )
-  };
   List.iter(write_component_signature(oc), component_list);
   close_out(oc)
 };
