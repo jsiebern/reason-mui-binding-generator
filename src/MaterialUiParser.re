@@ -23,14 +23,86 @@ let get_callback_type = (prop_name, module_name) =>
     }
   };
 
-let encodeType = (moduleName, propertyName, flowTypeJson) => {
+let rec resolveSignature = (flowTypeJson) => {
+  open Yojson.Basic.Util;
+  let signatureType = flowTypeJson |> member("type") |> to_string;
+  switch signatureType {
+  | "function" =>
+    let signature = flowTypeJson |> member("signature");
+    let argumentList = signature |> member("arguments") |> to_list;
+    let returnType = signature |> member("return") |> member("name") |> to_string;
+    let returnType =
+      switch returnType {
+      | "void" => "unit"
+      | "Node"
+      | "node" => "ReasonReact.reactElement"
+      | other => failwith("unknown callback return type: " ++ other)
+      };
+    let customCallback =
+      argumentList
+      |> List.fold_left(
+           (str, arg) => {
+             let argName = arg |> member("name") |> to_string;
+             let argType = arg |> member("type") |> member("name") |> to_string;
+             let argType =
+               switch argType {
+               | "Event" => "ReactEventRe.Synthetic.t"
+               | "SyntheticEvent" => "ReactEventRe.Synthetic.t"
+               | "SyntheticFocusEvent" => "ReactEventRe.Focus.t"
+               | "SyntheticUIEvent" => "ReactEventRe.UI.t"
+               | "SyntheticInputEvent" => "ReactEventRe.Form.t"
+               | "SyntheticKeyboardEvent" => "ReactEventRe.Keyboard.t"
+               | "string" => "string"
+               | "bool" => "bool"
+               | "number" => "float"
+               | "union"
+               | "any" => "_"
+               | "Node"
+               | "node" => "ReasonReact.reactElement"
+               | "signature" => resolveSignature(arg |> member("type"))
+               | other =>
+                 failwith("unknown callback argument type: " ++ argName ++ " --> " ++ other)
+               };
+             str ++ argType ++ " => "
+           },
+           ""
+         );
+    customCallback ++ returnType
+  | "object" =>
+    let properties = flowTypeJson |> member("signature") |> member("properties") |> to_list;
+    let types =
+      properties
+      |> List.fold_left(
+           (str, prop) => {
+             let key =
+               switch (prop |> member("key")) {
+               | `String(key) => key
+               | _ => "unionProp"
+               };
+             let valueType = prop |> member("value") |> member("name") |> to_string;
+             let valueType =
+               switch valueType {
+               | "string" => "string"
+               | "bool" => "bool"
+               | "number" => "float"
+               | "union"
+               | "any" => "_"
+               | "Node"
+               | "node" => "ReasonReact.reactElement"
+               | other => failwith("unknown object property type: " ++ key ++ " --> " ++ other)
+               };
+             str ++ "\"" ++ key ++ "\": " ++ valueType ++ ", "
+           },
+           ""
+         );
+    "{. " ++ String.sub(types, 0, String.length(types) - 2) ++ " }"
+  | _ => "_"
+  }
+};
+
+let encodeType = (moduleName, propertyName, flowTypeJson, isOptional) => {
   open Yojson.Basic.Util;
   let name = flowTypeJson |> member("name") |> to_string_option;
-  let isOptional =
-    try (flowTypeJson |> member("required") |> to_bool) {
-    | Type_error(_) => false
-    };
-  let isOptional = ! isOptional;
   switch name {
   | Some(type_category) =>
     switch type_category {
@@ -65,10 +137,23 @@ let encodeType = (moduleName, propertyName, flowTypeJson) => {
         let mapped_types =
           union_types_json
           |> List.filter((union_type_json) => union_type_json |> member("name") != `Null)
+          |> List.filter(
+               (union_type_json) => union_type_json |> member("name") |> to_string != "literal"
+             )
           |> List.map(
                (union_type_json) => {
                  let type_category = union_type_json |> member("name") |> to_string;
-                 Component.Type.map_type(type_category, false)
+                 if (Component.Type.is_signature(type_category)) {
+                   let signatureType = union_type_json |> member("type") |> to_string;
+                   switch signatureType {
+                   | "object" => Component.Type.ObjectSignature(resolveSignature(union_type_json))
+                   | "function" => Component.Type.CustomCallback(resolveSignature(union_type_json))
+                   | other =>
+                     failwith("unknown signature type: " ++ propertyName ++ " --> " ++ other)
+                   }
+                 } else {
+                   Component.Type.map_type(type_category, false)
+                 }
                }
              );
         let union_type =
@@ -97,7 +182,6 @@ let encodeType = (moduleName, propertyName, flowTypeJson) => {
         array_type
       }
     | other =>
-      /* TODO: signature / type == function check */
       if (Component.Type.is_callback(type_category, propertyName)) {
         let callback_type = get_callback_type(propertyName, moduleName);
         if (isOptional) {
@@ -106,86 +190,18 @@ let encodeType = (moduleName, propertyName, flowTypeJson) => {
           callback_type
         }
       } else if (Component.Type.is_signature(type_category)) {
-        let rec resolveSignature = (flowTypeJson) => {
-          let signatureType = flowTypeJson |> member("type") |> to_string;
-          switch signatureType {
-          | "function" =>
-            let signature = flowTypeJson |> member("signature");
-            let argumentList = signature |> member("arguments") |> to_list;
-            let returnType = signature |> member("return") |> member("name") |> to_string;
-            let returnType =
-              switch returnType {
-              | "void" => "unit"
-              | "Node"
-              | "node" => "ReasonReact.reactElement"
-              | other => failwith("unknown callback return type: " ++ other)
-              };
-            let customCallback =
-              argumentList
-              |> List.fold_left(
-                   (str, arg) => {
-                     let argName = arg |> member("name") |> to_string;
-                     let argType = arg |> member("type") |> member("name") |> to_string;
-                     let argType =
-                       switch argType {
-                       | "Event" => "ReactEventRe.Synthetic.t"
-                       | "SyntheticEvent" => "ReactEventRe.Synthetic.t"
-                       | "SyntheticFocusEvent" => "ReactEventRe.Focus.t"
-                       | "SyntheticUIEvent" => "ReactEventRe.UI.t"
-                       | "SyntheticInputEvent" => "ReactEventRe.Form.t"
-                       | "SyntheticKeyboardEvent" => "ReactEventRe.Keyboard.t"
-                       | "string" => "string"
-                       | "bool" => "bool"
-                       | "number" => "float"
-                       | "union"
-                       | "any" => "_"
-                       | "Node"
-                       | "node" => "ReasonReact.reactElement"
-                       | "signature" => resolveSignature(arg |> member("type"))
-                       | other =>
-                         failwith(
-                           "unknown callback argument type: " ++ argName ++ " --> " ++ other
-                         )
-                       };
-                     str ++ argType ++ " => "
-                   },
-                   ""
-                 );
-            customCallback ++ returnType
-          | "object" =>
-            let properties =
-              flowTypeJson |> member("signature") |> member("properties") |> to_list;
-            let types =
-              properties
-              |> List.fold_left(
-                   (str, prop) => {
-                     let key =
-                       switch (prop |> member("key")) {
-                       | `String(key) => key
-                       | _ => "unionProp"
-                       };
-                     let valueType = prop |> member("value") |> member("name") |> to_string;
-                     let valueType =
-                       switch valueType {
-                       | "string" => "string"
-                       | "bool" => "bool"
-                       | "number" => "float"
-                       | "union"
-                       | "any" => "_"
-                       | "Node"
-                       | "node" => "ReasonReact.reactElement"
-                       | other =>
-                         failwith("unknown object property type: " ++ key ++ " --> " ++ other)
-                       };
-                     str ++ "\"" ++ key ++ "\": " ++ valueType ++ ", "
-                   },
-                   ""
-                 );
-            "{. " ++ String.sub(types, 0, String.length(types) - 2) ++ " }"
-          | _ => "_"
-          }
-        };
         let callback_type = Component.Type.CustomCallback(resolveSignature(flowTypeJson));
+        if (isOptional) {
+          Component.Type.Option(callback_type)
+        } else {
+          callback_type
+        }
+      } else if (Component.Type.isCallbackNameValid(propertyName)) {
+        let callback_type =
+          switch type_category {
+          | "TransitionCallback" => Component.Type.TransitionCallback
+          | other => failwith("unknown callback type: " ++ propertyName ++ " --> " ++ other)
+          };
         if (isOptional) {
           Component.Type.Option(callback_type)
         } else {
@@ -212,7 +228,10 @@ let build_properties = (moduleName, props_json) => {
            let flowType = propJson |> member("flowType");
            let normalType = propJson |> member("type");
            let typeJson = flowType !== `Null ? flowType : normalType;
-           let property_type = encodeType(moduleName, name, typeJson);
+           let isRequired = propJson |> member("required");
+           let isRequired = isRequired == `Null ? false : isRequired |> to_bool;
+           let isOptional = isRequired ? false : true;
+           let property_type = encodeType(moduleName, name, typeJson, isOptional);
            [{Component.Property.name, property_type, comment}, ...props]
          } else {
            props

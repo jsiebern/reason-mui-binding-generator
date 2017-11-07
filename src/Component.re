@@ -28,15 +28,17 @@ module Type = {
     | Element
     | Style
     | Object
+    | ObjectSignature(string)
     | Enum(enum)
     | Option(t)
     | Array(t)
     | Union(list(t));
+  let isCallbackNameValid = (name) => {
+    let regex = Str.regexp("on[A-Z]");
+    Str.string_match(regex, name, 0)
+  };
   let is_callback = (type_name, props_name) => {
-    let is_name_valid = {
-      let regex = Str.regexp("on[A-Z]");
-      Str.string_match(regex, props_name, 0)
-    };
+    let is_name_valid = isCallbackNameValid(props_name);
     switch type_name {
     | "Function" when is_name_valid => true
     | _ => false
@@ -56,11 +58,19 @@ module Type = {
       | "float" => Number
       | "boolean" => Bool
       | "any"
+      | "Function"
       | "$ReadOnlyArray" => Any
       | "Node"
       | "React.ReactNode" => Element
       | "CSSProperties" => Style
       | "Date" => Date
+      | "TransitionClasses" =>
+        Union([
+          String,
+          ObjectSignature(
+            "{. \"appear\": string, \"appearActive\": string, \"enter\": string, \"enterActive\": string, \"exit\": string, \"exitActive\": string }"
+          )
+        ])
       | _ => Object
       };
     if (is_optional) {
@@ -94,6 +104,7 @@ module Type = {
     | Element => "`Element"
     | Style
     | Object
+    | ObjectSignature(_)
     | Any => "`Object"
     | Enum(_) => "`Enum"
     | Array(_)
@@ -141,6 +152,7 @@ module Type = {
     | Element => "ReasonReact.reactElement"
     | Style => "ReactDOMRe.style"
     | Object => "Js.t({..})"
+    | ObjectSignature(signature) => "(" ++ (signature ++ ")")
     | Enum({name, _}) => name ++ ".t"
     | Option(t) => "option(" ++ (to_string(counter_ref, t) ++ ")")
     | Array(t) => "array(" ++ (to_string(counter_ref, t) ++ ")")

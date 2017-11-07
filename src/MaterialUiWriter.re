@@ -101,6 +101,23 @@ let build_js_props = (properties) => {
         | String
         | Number
         | Object
+        | Element
+        | ClipboardCallback
+        | CompositionCallback
+        | KeyboardCallback
+        | FocusCallback
+        | FormCallback
+        | MouseCallback
+        | SelectionCallback
+        | TouchCallback
+        | UICallback
+        | WheelCallback
+        | MediaCallback
+        | ImageCallback
+        | AnimationCallback
+        | TransitionCallback
+        | GenericCallback
+        | CustomCallback(_)
         | Any => property_name
         | Enum({name, _}) => Printf.sprintf("%s.to_string, %s", name, property_name)
         | Array(Bool as t) =>
@@ -117,7 +134,7 @@ let build_js_props = (properties) => {
                )
             |> List.hd;
           Printf.sprintf(
-            "(fun | `Enum(e) => unwrapValue(`String(%s.to_string(e))) | x => unwrapValue(x))(%s)",
+            "(fun | `Enum(e) => unwrapValue(`String(%s.to_string(e))) | x => unwrapValue(x)),(%s)",
             enum.Component.Type.name,
             property_name
           )
@@ -127,8 +144,7 @@ let build_js_props = (properties) => {
         | Option(Union(_) as t) =>
           Printf.sprintf("Js.Nullable.from_opt(optionMap(%s))", convert(t, property_name))
         | Option(_) => "Js.Nullable.from_opt(" ++ (property_name ++ ")")
-        | _ => property_name
-        /* | _ => failwith("prop_to_string: " ++ Component.Type.to_string(ref(0), property_type)) */
+        | _ => failwith("prop_to_string: " ++ Component.Type.to_string(ref(0), property_type))
         }
       )
     };

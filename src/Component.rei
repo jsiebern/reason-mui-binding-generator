@@ -28,14 +28,15 @@ module Type: {
     | Element
     | Style
     | Object
+    | ObjectSignature(string)
     | Enum(enum)
     | Option(t)
     | Array(t)
     | Union(list(t));
+  let isCallbackNameValid: string => bool;
   let is_callback: (string, string) => bool;
   let is_signature: string => bool;
   let map_type: (string, bool) => t;
-  /* let map_type: (string, string, bool) => t; */
   let to_string: (ref(int), t) => string;
   let is_option: t => bool;
   let is_enum: t => bool;
