@@ -61,6 +61,7 @@ module Type = {
       | "Function"
       | "$ReadOnlyArray" => Any
       | "Node"
+      | "Element"
       | "React.ReactNode" => Element
       | "CSSProperties" => Style
       | "Date" => Date

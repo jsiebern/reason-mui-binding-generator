@@ -10,7 +10,6 @@
     "author": "Jonathan Siebern <jsiebern88@gmail.com>",
     "license": "MIT",
     "devDependencies": {
-        "@types/react": "^16.0.20",
         "babel-cli": "^6.26.0",
         "babel-plugin-flow-react-proptypes": "^7.0.1",
         "babel-plugin-preval": "^1.6.2",
@@ -21,7 +20,6 @@
         "babel-preset-stage-1": "^6.24.1",
         "enzyme": "^3.1.1",
         "fs": "^0.0.1-security",
-        "material-ui": "next",
         "next": "^4.1.4",
         "path": "^0.12.7",
         "react": "^16.0.0",

@@ -92,11 +92,12 @@ let build_props_arg = (properties) => {
 let build_js_props = (properties) => {
   print_endline("_Building Js Props");
   let prop_to_string = (property) => {
-    let rec convert = (property_type, property_name) => {
+    let rec convert = (property_type, property_name, fromOptionMap) => {
       let property_name = clean_parameter_name(property_name);
       Component.Type.(
         switch property_type {
-        | Bool => "Js.Boolean.to_js_boolean, " ++ property_name
+        | Bool when fromOptionMap => "Js.Boolean.to_js_boolean, " ++ property_name
+        | Bool when ! fromOptionMap => "Js.Boolean.to_js_boolean(" ++ property_name ++ ")"
         | Date
         | String
         | Number
@@ -119,9 +120,12 @@ let build_js_props = (properties) => {
         | GenericCallback
         | CustomCallback(_)
         | Any => property_name
-        | Enum({name, _}) => Printf.sprintf("%s.to_string, %s", name, property_name)
+        | Enum({name, _}) when ! fromOptionMap =>
+          Printf.sprintf("%s.to_string(%s)", name, property_name)
+        | Enum({name, _}) when fromOptionMap =>
+          Printf.sprintf("%s.to_string, %s", name, property_name)
         | Array(Bool as t) =>
-          Printf.sprintf("Array.map((x) => %s), %s", convert(t, "x"), property_name)
+          Printf.sprintf("Array.map((x) => %s), %s", convert(t, "x", true), property_name)
         | Array(_) => property_name
         | Union(ts) when List.exists(Component.Type.is_enum, ts) =>
           let enum =
@@ -142,7 +146,7 @@ let build_js_props = (properties) => {
         | Option(Bool as t)
         | Option(Enum(_) as t)
         | Option(Union(_) as t) =>
-          Printf.sprintf("Js.Nullable.from_opt(optionMap(%s))", convert(t, property_name))
+          Printf.sprintf("Js.Nullable.from_opt(optionMap(%s))", convert(t, property_name, true))
         | Option(_) => "Js.Nullable.from_opt(" ++ (property_name ++ ")")
         | _ => failwith("prop_to_string: " ++ Component.Type.to_string(ref(0), property_type))
         }
@@ -153,7 +157,8 @@ let build_js_props = (properties) => {
       property.Component.Property.name,
       convert(
         property.Component.Property.property_type,
-        clean_parameter_name(property.Component.Property.name)
+        clean_parameter_name(property.Component.Property.name),
+        false
       )
     )
   };
@@ -200,6 +205,10 @@ let write_re = (~bundled, path, component_list) => {
   Printf.fprintf(
     oc,
     "type jsUnsafe;\nexternal toJsUnsafe : 'a => jsUnsafe = \"%%identity\";\nlet unwrapValue = fun | `String(s) => toJsUnsafe(s) | `Bool(b) => toJsUnsafe(Js.Boolean.to_js_boolean(b)) | `Float(f) => toJsUnsafe(f) | `Date(d) => toJsUnsafe(d) | `Callback(c) => toJsUnsafe(c) | `Element(e) => toJsUnsafe(e) | `Object(o) => toJsUnsafe(o) | `Enum(_) => assert false;\nlet optionMap = (fn, option) => switch option { | Some((value)) => Some(fn(value)) | None => None };\n\n"
+  );
+  Printf.fprintf(
+    oc,
+    "type withStylesComponent('a) = [@bs] ('a => 'a);\n[@bs.module \"material-ui/styles\"] external withStylesExt : 'styles => withStylesComponent('component) = \"withStyles\";\nlet withStyles = (styles: Js.t({..}), curried, component) => { let stylesWrapper = withStylesExt(styles); [@bs] stylesWrapper(ReasonReact.wrapReasonForJs(~component, (jsProps) => curried(jsProps, ~classes=jsProps##classes, [||])))};\n\n"
   );
   List.iter(write_component_implementation(bundled, oc), component_list);
   close_out(oc)
@@ -271,6 +280,10 @@ let write_component_signature = (oc, component) => {
 
 let write_rei = (~bundled, path, component_list) => {
   let oc = open_out(path);
+  Printf.fprintf(
+    oc,
+    "let withStyles: (Js.t({..  }), (Js.t({.. classes : 'a }), ~classes: 'a, array('b)) => ReasonReact.component ('c,  'd,  'e), ReasonReact.componentSpec ('f,  'g,  'h,  'i,  'j)) => ReasonReact.reactClass;\n\n"
+  );
   List.iter(write_component_signature(oc), component_list);
   close_out(oc)
 };
