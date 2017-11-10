@@ -12,6 +12,9 @@ let custom_callbacks = {
   add(("onRequestClose", "Dialog"), Component.Type.GenericCallback);
   add(("onRequestClose", "Menu"), Component.Type.GenericCallback);
   add(("onRequestClose", "Popover"), Component.Type.GenericCallback);
+  add(("onBackdropClick", "Modal"), Component.Type.MouseCallback);
+  add(("onEscapeKeyUp", "Modal"), Component.Type.KeyboardCallback);
+  add(("onRequestClose", "Modal"), Component.Type.GenericCallback);
   table
 };
 
