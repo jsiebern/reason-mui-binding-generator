@@ -207,8 +207,7 @@ let write_re = (~bundled, path, component_list) => {
     "type jsUnsafe;\nexternal toJsUnsafe : 'a => jsUnsafe = \"%%identity\";\nlet unwrapValue = fun | `String(s) => toJsUnsafe(s) | `Bool(b) => toJsUnsafe(Js.Boolean.to_js_boolean(b)) | `Float(f) => toJsUnsafe(f) | `Date(d) => toJsUnsafe(d) | `Callback(c) => toJsUnsafe(c) | `Element(e) => toJsUnsafe(e) | `Object(o) => toJsUnsafe(o) | `Enum(_) => assert false;\nlet optionMap = (fn, option) => switch option { | Some((value)) => Some(fn(value)) | None => None };\n\n"
   );
   Printf.fprintf(
-    oc,
-    "type withStylesComponent('a) = [@bs] ('a => 'a);\n[@bs.module \"material-ui/styles\"] external withStylesExt : 'styles => withStylesComponent('component) = \"withStyles\";\nlet withStyles = (styles: Js.t({..}), curried, component) => { let stylesWrapper = withStylesExt(styles); [@bs] stylesWrapper(ReasonReact.wrapReasonForJs(~component, (jsProps) => curried(jsProps, ~classes=jsProps##classes, [||])))};\n\n"
+    oc,"module WithStyles = {let component = ReasonReact.statelessComponent(\"WithStyles\");let make = (~render, ~classes: Js.t({..}), _children) => {...component,render: (_self) => render(classes)};type withStylesComponent('a) = [@bs] ('a => ReasonReact.reactClass);[@bs.module \"material-ui/styles\"]external withStylesExt : 'styles => withStylesComponent('component) =\"withStyles\";let creteStylesWrapper = (styles: Js.t({..})) => {let stylesWrapper = withStylesExt(styles);[@bs] stylesWrapper};let make = (~styles=Js.Obj.empty(), ~render, children) =>ReasonReact.wrapJsForReason(~reactClass={let wrapper = creteStylesWrapper(styles);[@bs]wrapper(ReasonReact.wrapReasonForJs(~component,(jsProps) => make(~render=jsProps##render, ~classes=jsProps##classes, [||])))},~props={\"render\": render},children);};\n\n"
   );
   List.iter(write_component_implementation(bundled, oc), component_list);
   close_out(oc)
@@ -282,7 +281,7 @@ let write_rei = (~bundled, path, component_list) => {
   let oc = open_out(path);
   Printf.fprintf(
     oc,
-    "let withStyles: (Js.t({..  }), (Js.t({.. classes : 'a }), ~classes: 'a, array('b)) => ReasonReact.component ('c,  'd,  'e), ReasonReact.componentSpec ('f,  'g,  'h,  'i,  'j)) => ReasonReact.reactClass;\n\n"
+    "module WithStyles: {let make: (~styles: Js.t({..  })=?, ~render: 'a, array(ReasonReact.reactElement)) =>ReasonReact.component(ReasonReact.stateless,  ReasonReact.noRetainedProps,  ReasonReact.actionless);};\n\n"
   );
   List.iter(write_component_signature(oc), component_list);
   close_out(oc)
