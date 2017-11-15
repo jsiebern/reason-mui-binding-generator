@@ -172,6 +172,19 @@ let encodeType = (moduleName, propertyName, flowTypeJson, isOptional) => {
           union_type
         }
       }
+    | "classes" =>
+      let union_types_json = flowTypeJson |> member("elements");
+      if (union_types_json === `Null) {
+        Component.Type.map_type("any", isOptional)
+      } else {
+        let classNames = flowTypeJson |> member("elements") |> to_list |> List.map((jsonEl) => jsonEl |> to_string);
+        let classesType = Component.Type.Classes(classNames);
+        if (isOptional) {
+          Component.Type.Option(classesType)
+        } else {
+          classesType
+        }
+      }
     | "intersection" => Component.Type.map_type("any", isOptional)
     | "Array" =>
       let element_type_json = flowTypeJson |> member("elements") |> to_list;

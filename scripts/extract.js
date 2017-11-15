@@ -54,6 +54,13 @@ components.forEach(componentPath => {
     const inheritsFrom = !inheritedComponent ? '' : inheritedComponent[1];
     reactAPI.inheritsFrom = inheritsFrom;
 
+    if (typeof reactAPI.props.classes !== 'undefined') {
+        reactAPI.props.classes.flowType = {
+            "name": "classes",
+            "elements": reactAPI.styles.classes
+        };
+    }
+
     ensureExists(outputDirectory, 0o744, err => {
         if (err) {
             console.log('Error creating directory', outputDirectory);

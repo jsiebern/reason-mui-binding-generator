@@ -30,6 +30,7 @@ module Type = {
     | Object
     | ObjectSignature(string)
     | Enum(enum)
+    | Classes(list(string))
     | Option(t)
     | Array(t)
     | Union(list(t));
@@ -110,6 +111,7 @@ module Type = {
     | Enum(_) => "`Enum"
     | Array(_)
     | Option(_)
+    | Classes(_)
     | Union(_) => failwith("Unsupported type in union");
   let any_to_string = (counter) => {
     let letter_base = Char.code('a') - 1;
@@ -155,6 +157,7 @@ module Type = {
     | Object => "Js.t({..})"
     | ObjectSignature(signature) => "(" ++ (signature ++ ")")
     | Enum({name, _}) => name ++ ".t"
+    | Classes(_) => "Classes.t"
     | Option(t) => "option(" ++ (to_string(counter_ref, t) ++ ")")
     | Array(t) => "array(" ++ (to_string(counter_ref, t) ++ ")")
     | Union(ts) =>
@@ -176,6 +179,10 @@ module Type = {
   let is_enum =
     fun
     | Enum(_) => true
+    | _ => false;
+  let is_classes =
+    fun
+    | Classes(_) => true
     | _ => false;
   let is_any =
     fun

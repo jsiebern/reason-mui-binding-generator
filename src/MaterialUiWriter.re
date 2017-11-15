@@ -67,6 +67,55 @@ let write_enum_implementations = (oc, properties) => {
   )
 };
 
+let getClasses = (properties) =>
+  properties
+  |> List.map(
+       (x) => {
+         let ts =
+           switch x.Component.Property.property_type {
+           | Option(Union(ts)) => ts
+           | Option(t)
+           | Array(t) => [t]
+           | Union(ts) => ts
+           | _ as t => [t]
+           };
+         List.filter(Component.Type.is_classes, ts)
+       }
+     )
+  |> List.concat;
+
+let writeClassesImplementations = (oc, properties: list(Component.Property.t)) => {
+  let build_to_string = (values) =>
+    values
+    |> List.map((x) => Printf.sprintf("%s(_) => \"%s\"", clean_variant_value(x), x))
+    |> String.concat(" | ");
+  let build_to_stringClassName = (values) =>
+    values
+    |> List.map((x) => Printf.sprintf("%s (className)", clean_variant_value(x)))
+    |> String.concat(" | ");
+  let classes = getClasses(properties);
+  classes
+  |> List.iter(
+       fun
+       | Component.Type.Classes(values) => {
+           let classesTypeDef =
+             values
+             |> List.fold_left(
+                  (str, name) => str ++ "| " ++ clean_variant_value(name) ++ "(string) ",
+                  ""
+                );
+           Printf.fprintf(
+             oc,
+             "module Classes = { type classesType = %s; type t = list(classesType); let to_string = fun | %s; let to_obj = (listOfClasses) => listOfClasses |> StdLabels.List.fold_left(~f=(obj, classType) => { switch classType { | %s => Js.Dict.set(obj, to_string(classType), className) }; obj }, ~init=Js.Dict.empty()); };\n",
+             classesTypeDef,
+             build_to_string(values),
+             build_to_stringClassName(values)
+           )
+         }
+       | _ => assert false
+     )
+};
+
 let build_props_arg = (properties) => {
   let any_counter = ref(0);
   let prop_to_string = (property) => {
@@ -117,8 +166,10 @@ let build_js_props = (properties) => {
         | Any => property_name
         | Enum({name, _}) when ! fromOptionMap =>
           Printf.sprintf("%s.to_string(%s)", name, property_name)
+        | Classes(_) when ! fromOptionMap => Printf.sprintf("Classes.to_obj(%s)", property_name)
         | Enum({name, _}) when fromOptionMap =>
           Printf.sprintf("%s.to_string, %s", name, property_name)
+        | Classes(_) when fromOptionMap => Printf.sprintf("Classes.to_obj, %s", property_name)
         | Array(Bool as t) =>
           Printf.sprintf("Array.map((x) => %s), %s", convert(t, "x", true), property_name)
         | Array(_) => property_name
@@ -140,6 +191,7 @@ let build_js_props = (properties) => {
         | Union(_) => "unwrapValue, " ++ property_name
         | Option(Bool as t)
         | Option(Enum(_) as t)
+        | Option(Classes(_) as t)
         | Option(Union(_) as t) =>
           Printf.sprintf("Js.Nullable.from_opt(optionMap(%s))", convert(t, property_name, true))
         | Option(_) => "Js.Nullable.from_opt(" ++ (property_name ++ ")")
@@ -182,6 +234,7 @@ let write_component_implementation = (bundled, oc, component) => {
     };
   Printf.fprintf(oc, "module %s = {\n", component.Component.name);
   write_enum_implementations(oc, component.Component.properties);
+  writeClassesImplementations(oc, component.Component.properties);
   Printf.fprintf(
     oc,
     "[@bs.module \"%s\"] external reactClass : ReasonReact.reactClass = \"%s\";\nlet make = (%s, children) => \nReasonReact.wrapJsForReason(~reactClass=reactClass, ~props={%s}, children);\n};\n",
@@ -200,10 +253,10 @@ let writeColors = (oc, colors: list(MaterialUiParser.color)) => {
          let extName = color.key ++ "Ext";
          Printf.fprintf(
            oc,
-           "module %s = { [@bs.module] external %s: Js.Dict.t(string) = \"material-ui/colors/%s\";",
+           "module %s = { [@bs.module \"material-ui/colors/%s\"] external %s: Js.Dict.t(string) = \"default\";",
            String.capitalize(color.key),
-           extName,
-           color.key
+           color.key,
+           extName
          );
          color.subkeys
          |> List.iter(
@@ -280,6 +333,28 @@ let write_enum_signatures = (oc, properties) => {
   )
 };
 
+let writeClassesSignatures = (oc, properties: list(Component.Property.t)) => {
+  let classes = getClasses(properties);
+  classes
+  |> List.iter(
+       fun
+       | Component.Type.Classes(values) => {
+           let classesTypeDef =
+             values
+             |> List.fold_left(
+                  (str, name) => str ++ "| " ++ clean_variant_value(name) ++ "(string) ",
+                  ""
+                );
+           Printf.fprintf(
+             oc,
+             "module Classes : { type classesType = %s; type t = list(classesType); let to_string: classesType => string; let to_obj: t => Js.Dict.t(string); };\n",
+             classesTypeDef
+           )
+         }
+       | _ => assert false
+     )
+};
+
 let build_comment = (properties) => {
   let comments =
     properties
@@ -294,6 +369,7 @@ let build_comment = (properties) => {
 let write_component_signature = (oc, component) => {
   Printf.fprintf(oc, "module %s: {\n", component.Component.name);
   write_enum_signatures(oc, component.Component.properties);
+  writeClassesSignatures(oc, component.Component.properties);
   Printf.fprintf(
     oc,
     "/*** Component %s\n%s */\n",
