@@ -225,7 +225,6 @@ let build_properties = (moduleName, props_json) => {
   |> List.fold_left(
        (props, prop) => {
          let (name, propJson) = prop;
-         print_endline("--> Prop " ++ name);
          if (! List.mem(name, Component.Property.props_blacklist)) {
            let comment = propJson |> member("description") |> to_string;
            let flowType = propJson |> member("flowType");
@@ -245,7 +244,6 @@ let build_properties = (moduleName, props_json) => {
 };
 
 let parseComponent = (filePath) => {
-  print_endline("Parsing " ++ filePath);
   open Yojson.Basic.Util;
   let json = Yojson.Basic.from_file(filePath);
   let name = json |> member("name") |> to_string;
@@ -295,7 +293,7 @@ let parse = (path) => {
     |> Array.fold_left(
          (lst, fileName) => {
            let filePath = path ++ "/" ++ fileName;
-           if (Str.last_chars(filePath, 5) == ".json") {
+           if (Str.last_chars(filePath, 5) == ".json" && fileName != "colors.json") {
              [parseComponent(filePath), ...lst]
            } else {
              lst
@@ -305,4 +303,24 @@ let parse = (path) => {
        );
   let solveInheritance = solveInheritance(components);
   components |> List.map((component) => solveInheritance(component))
+};
+
+type color = {
+  key: string,
+  subkeys: list(string)
+};
+
+let parseColors = (path) => {
+  open Yojson.Basic.Util;
+  let json = Yojson.Basic.from_file(path ++ "/colors.json");
+  json
+  |> to_assoc
+  |> List.fold_left(
+       (lst, (key, value)) => {
+         let subkeys = value |> to_assoc |> List.fold_left((lst, (key, value)) => [key, ...lst], []);
+         let obj: color = {key, subkeys};
+         [obj, ...lst]
+       },
+       []
+     )
 };

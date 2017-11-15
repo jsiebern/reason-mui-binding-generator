@@ -54,29 +54,25 @@ let write_enum_implementations = (oc, properties) => {
   let enums = get_enums(properties);
   List.iter(
     fun
-    | Component.Type.Enum({name, values}) => {
-        print_endline("--> Enum( " ++ build_enum_type_declaration(values) ++ " )");
-        Printf.fprintf(
-          oc,
-          "module %s = { type t = | %s; let to_string = fun | %s; };\n",
-          name,
-          build_enum_type_declaration(values),
-          build_to_string(values)
-        )
-      }
+    | Component.Type.Enum({name, values}) =>
+      Printf.fprintf(
+        oc,
+        "module %s = { type t = | %s; let to_string = fun | %s; };\n",
+        name,
+        build_enum_type_declaration(values),
+        build_to_string(values)
+      )
     | _ => assert false,
     enums
   )
 };
 
 let build_props_arg = (properties) => {
-  print_endline("_Building Prop Args");
   let any_counter = ref(0);
   let prop_to_string = (property) => {
     let name = clean_parameter_name(property.Component.Property.name);
     let type_string =
       Component.Type.to_string(any_counter, property.Component.Property.property_type);
-    print_endline("--> Prop '" ++ name ++ "' (" ++ type_string ++ ")");
     let optional_prop_string =
       if (Component.Type.is_option(property.Component.Property.property_type)) {
         "=?"
@@ -90,7 +86,6 @@ let build_props_arg = (properties) => {
 };
 
 let build_js_props = (properties) => {
-  print_endline("_Building Js Props");
   let prop_to_string = (property) => {
     let rec convert = (property_type, property_name, fromOptionMap) => {
       let property_name = clean_parameter_name(property_name);
@@ -168,7 +163,6 @@ let build_js_props = (properties) => {
 
 let write_component_implementation = (bundled, oc, component) => {
   let module_path = component.Component.module_path;
-  print_endline("Writing " ++ module_path);
   let (external_module_path, module_name) =
     if (bundled && has_theme_property(component.Component.properties)) {
       let len = String.length(module_path);
@@ -187,9 +181,7 @@ let write_component_implementation = (bundled, oc, component) => {
       (module_path, "default")
     };
   Printf.fprintf(oc, "module %s = {\n", component.Component.name);
-  print_endline("_Start Enums");
   write_enum_implementations(oc, component.Component.properties);
-  print_endline("_Finished Enums");
   Printf.fprintf(
     oc,
     "[@bs.module \"%s\"] external reactClass : ReasonReact.reactClass = \"%s\";\nlet make = (%s, children) => \nReasonReact.wrapJsForReason(~reactClass=reactClass, ~props={%s}, children);\n};\n",
@@ -200,15 +192,53 @@ let write_component_implementation = (bundled, oc, component) => {
   )
 };
 
-let write_re = (~bundled, path, component_list) => {
+let writeColors = (oc, colors: list(MaterialUiParser.color)) => {
+  Printf.fprintf(oc, "module Colors = {");
+  colors
+  |> List.iter(
+       (color: MaterialUiParser.color) => {
+         let extName = color.key ++ "Ext";
+         Printf.fprintf(
+           oc,
+           "module %s = { [@bs.module] external %s: Js.Dict.t(string) = \"material-ui/colors/%s\";",
+           String.capitalize(color.key),
+           extName,
+           color.key
+         );
+         color.subkeys
+         |> List.iter(
+              (subkey) => {
+                let isInt =
+                  try (int_of_string(subkey) != (-1)) {
+                  | Failure(_) => false
+                  };
+                let nKey = isInt ? "c" ++ subkey : subkey;
+                Printf.fprintf(
+                  oc,
+                  "let %s: string = Js.Dict.unsafeGet(%s, \"%s\");",
+                  String.uncapitalize(nKey),
+                  extName,
+                  subkey
+                )
+              }
+            );
+         Printf.fprintf(oc, "};")
+       }
+     );
+  Printf.fprintf(oc, "};")
+};
+
+let write_re = (~bundled=false, path, component_list, colors) => {
   let oc = open_out(path);
   Printf.fprintf(
     oc,
     "type jsUnsafe;\nexternal toJsUnsafe : 'a => jsUnsafe = \"%%identity\";\nlet unwrapValue = fun | `String(s) => toJsUnsafe(s) | `Bool(b) => toJsUnsafe(Js.Boolean.to_js_boolean(b)) | `Float(f) => toJsUnsafe(f) | `Date(d) => toJsUnsafe(d) | `Callback(c) => toJsUnsafe(c) | `Element(e) => toJsUnsafe(e) | `Object(o) => toJsUnsafe(o) | `Enum(_) => assert false;\nlet optionMap = (fn, option) => switch option { | Some((value)) => Some(fn(value)) | None => None };\n\n"
   );
   Printf.fprintf(
-    oc,"module WithStyles = {let component = ReasonReact.statelessComponent(\"WithStyles\");let make = (~render, ~classes: Js.t({..}), _children) => {...component,render: (_self) => render(classes)};type withStylesComponent('a) = [@bs] ('a => ReasonReact.reactClass);[@bs.module \"material-ui/styles\"]external withStylesExt : 'styles => withStylesComponent('component) =\"withStyles\";let creteStylesWrapper = (styles: Js.t({..})) => {let stylesWrapper = withStylesExt(styles);[@bs] stylesWrapper};let make = (~styles=Js.Obj.empty(), ~render, children) =>ReasonReact.wrapJsForReason(~reactClass={let wrapper = creteStylesWrapper(styles);[@bs]wrapper(ReasonReact.wrapReasonForJs(~component,(jsProps) => make(~render=jsProps##render, ~classes=jsProps##classes, [||])))},~props={\"render\": render},children);};\n\n"
+    oc,
+    "module WithStyles = {let component = ReasonReact.statelessComponent(\"WithStyles\");let make = (~render, ~classes: Js.t({..}), _children) => {...component,render: (_self) => render(classes)};type withStylesComponent('a) = [@bs] ('a => ReasonReact.reactClass);[@bs.module \"material-ui/styles\"]external withStylesExt : 'styles => withStylesComponent('component) =\"withStyles\";let creteStylesWrapper = (styles: Js.t({..})) => withStylesExt(styles);let make = (~styles=Js.Obj.empty(), ~render, children) =>ReasonReact.wrapJsForReason(~reactClass={let wrapper = creteStylesWrapper(styles);[@bs]wrapper(ReasonReact.wrapReasonForJs(~component,(jsProps) => make(~render=jsProps##render, ~classes=jsProps##classes, [||])))},~props={\"render\": render},children);};\n\n"
   );
+  writeColors(oc, colors);
   List.iter(write_component_implementation(bundled, oc), component_list);
   close_out(oc)
 };
@@ -277,12 +307,36 @@ let write_component_signature = (oc, component) => {
   )
 };
 
-let write_rei = (~bundled, path, component_list) => {
+let writeColors_rei = (oc, colors: list(MaterialUiParser.color)) => {
+  Printf.fprintf(oc, "module Colors: {");
+  colors
+  |> List.iter(
+       (color: MaterialUiParser.color) => {
+         Printf.fprintf(oc, "module %s: {", String.capitalize(color.key));
+         color.subkeys
+         |> List.iter(
+              (subkey) => {
+                let isInt =
+                  try (int_of_string(subkey) != (-1)) {
+                  | Failure(_) => false
+                  };
+                let nKey = isInt ? "c" ++ subkey : subkey;
+                Printf.fprintf(oc, "let %s: string;", String.uncapitalize(nKey))
+              }
+            );
+         Printf.fprintf(oc, "};")
+       }
+     );
+  Printf.fprintf(oc, "};")
+};
+
+let write_rei = (~bundled=false, path, component_list, colors) => {
   let oc = open_out(path);
   Printf.fprintf(
     oc,
     "module WithStyles: {let make: (~styles: Js.t({..  })=?, ~render: 'a, array(ReasonReact.reactElement)) =>ReasonReact.component(ReasonReact.stateless,  ReasonReact.noRetainedProps,  ReasonReact.actionless);};\n\n"
   );
+  writeColors_rei(oc, colors);
   List.iter(write_component_signature(oc), component_list);
   close_out(oc)
 };

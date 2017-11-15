@@ -4,6 +4,7 @@ import kebabCase from 'lodash/kebabCase';
 import * as reactDocgen from 'react-docgen';
 import getStylesCreator from '/Users/jonathansiebern/git/_fork/material-ui/src/styles/getStylesCreator';
 import createMuiTheme from '/Users/jonathansiebern/git/_fork/material-ui/src/styles/createMuiTheme';
+import * as colors from '/Users/jonathansiebern/git/_fork/material-ui/src/colors';
 
 import findComponents from './find-components';
 import ensureExists from './ensure-folder-exists';
@@ -64,4 +65,16 @@ components.forEach(componentPath => {
 
         console.log('Extracted JSON for', componentPath);
     });
+});
+
+ensureExists(outputDirectory, 0o744, err => {
+    if (err) {
+        console.log('Error creating directory', outputDirectory);
+        console.log(err);
+        return;
+    }
+
+    writeFileSync(path.resolve(outputDirectory, `colors.json`), JSON.stringify(colors));
+
+    console.log('Extracted JSON for Colors');
 });
