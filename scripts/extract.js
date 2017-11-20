@@ -1,17 +1,20 @@
+import Env from './env';
+const MuiPath = Env.MuiPath;
+
 import path from 'path';
 import { mkdir, readFileSync, writeFileSync } from 'fs';
 import kebabCase from 'lodash/kebabCase';
 import * as reactDocgen from 'react-docgen';
-import getStylesCreator from '/Users/jonathansiebern/git/_fork/material-ui/src/styles/getStylesCreator';
-import createMuiTheme from '/Users/jonathansiebern/git/_fork/material-ui/src/styles/createMuiTheme';
-import * as colors from '/Users/jonathansiebern/git/_fork/material-ui/src/colors';
+const getStylesCreator = require(MuiPath + '/src/styles/getStylesCreator').default;
+const createMuiTheme = require(MuiPath + '/src/styles/createMuiTheme').default;
+const colors = require(MuiPath + '/src/colors');
 
 import findComponents from './find-components';
 import ensureExists from './ensure-folder-exists';
 
 const components = findComponents();
 const theme = createMuiTheme();
-const rootDirectory = path.resolve('/Users/jonathansiebern/git/_fork/material-ui');
+const rootDirectory = MuiPath;
 const outputDirectory = path.join(__dirname, '../', 'output', 'json');
 
 components.forEach(componentPath => {

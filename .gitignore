@@ -4,3 +4,4 @@
 _build
 node_modules
 *.install
+scripts/env.js
