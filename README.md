@@ -34,3 +34,4 @@ Clone & rename the `env.example.js` in the `scripts` folder and enter the path t
 - [ ] Implement ref function signatures
 - [ ] Ignore "theme" prop in generation
 - [ ] Implement array resolving (esp. for union arrays)
+- [ ] Add default ".re" / ".rei" files that will be merged on write (instead of all the one-line strings)
