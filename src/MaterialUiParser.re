@@ -57,7 +57,7 @@ let rec resolveSignature = (flowTypeJson) => {
                | "SyntheticKeyboardEvent" => "ReactEventRe.Keyboard.t"
                | "string" => "string"
                | "bool" => "bool"
-               | "number" => "float"
+               | "number" => "int"
                | "union"
                | "any" => "_"
                | "Node"
@@ -87,7 +87,7 @@ let rec resolveSignature = (flowTypeJson) => {
                switch valueType {
                | "string" => "string"
                | "bool" => "bool"
-               | "number" => "float"
+               | "number" => "int"
                | "union"
                | "any" => "_"
                | "Node"
