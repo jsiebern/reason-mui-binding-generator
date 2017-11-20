@@ -173,7 +173,7 @@ let build_js_props = (properties) => {
         | Array(Bool as t) =>
           Printf.sprintf("Array.map((x) => %s), %s", convert(t, "x", true), property_name)
         | Array(_) => property_name
-        | Union(ts) when List.exists(Component.Type.is_enum, ts) =>
+        | Union(ts) when List.exists(Component.Type.is_enum, ts) && fromOptionMap =>
           let enum =
             ts
             |> List.filter(Component.Type.is_enum)
@@ -188,7 +188,23 @@ let build_js_props = (properties) => {
             enum.Component.Type.name,
             property_name
           )
-        | Union(_) => "unwrapValue, " ++ property_name
+        | Union(ts) when List.exists(Component.Type.is_enum, ts) && ! fromOptionMap =>
+          let enum =
+            ts
+            |> List.filter(Component.Type.is_enum)
+            |> List.map(
+                 fun
+                 | Enum(e) => e
+                 | _ => assert false
+               )
+            |> List.hd;
+          Printf.sprintf(
+            "(fun | `Enum(e) => unwrapValue(`String(%s.to_string(e))) | x => unwrapValue(x))(%s)",
+            enum.Component.Type.name,
+            property_name
+          )
+        | Union(_) when fromOptionMap => "unwrapValue, " ++ property_name
+        | Union(_) when ! fromOptionMap => "unwrapValue(" ++ property_name ++ ")"
         | Option(Bool as t)
         | Option(Enum(_) as t)
         | Option(Classes(_) as t)

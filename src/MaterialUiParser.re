@@ -177,7 +177,11 @@ let encodeType = (moduleName, propertyName, flowTypeJson, isOptional) => {
       if (union_types_json === `Null) {
         Component.Type.map_type("any", isOptional)
       } else {
-        let classNames = flowTypeJson |> member("elements") |> to_list |> List.map((jsonEl) => jsonEl |> to_string);
+        let classNames =
+          flowTypeJson
+          |> member("elements")
+          |> to_list
+          |> List.map((jsonEl) => jsonEl |> to_string);
         let classesType = Component.Type.Classes(classNames);
         if (isOptional) {
           Component.Type.Option(classesType)
@@ -330,7 +334,8 @@ let parseColors = (path) => {
   |> to_assoc
   |> List.fold_left(
        (lst, (key, value)) => {
-         let subkeys = value |> to_assoc |> List.fold_left((lst, (key, value)) => [key, ...lst], []);
+         let subkeys =
+           value |> to_assoc |> List.fold_left((lst, (key, value)) => [key, ...lst], []);
          let obj: color = {key, subkeys};
          [obj, ...lst]
        },
