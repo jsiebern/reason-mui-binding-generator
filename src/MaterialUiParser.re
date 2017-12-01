@@ -250,6 +250,7 @@ let build_properties = (moduleName, props_json) => {
            let isRequired = propJson |> member("required");
            let isRequired = isRequired == `Null ? false : isRequired |> to_bool;
            let isOptional = isRequired ? false : true;
+           let isOptional = isOptional ? isOptional : propJson |> member("defaultValue") !== `Null;
            let property_type = encodeType(moduleName, name, typeJson, isOptional);
            [{Component.Property.name, property_type, comment}, ...props]
          } else {
