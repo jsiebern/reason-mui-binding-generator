@@ -1,7 +1,0 @@
-*.swp
-
-.merlin
-_build
-node_modules
-*.install
-scripts/env.js
