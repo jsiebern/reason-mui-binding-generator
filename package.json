@@ -4,6 +4,7 @@
     "description": "Reason binding generator for material-ui v1",
     "scripts": {
         "extract": "babel-node ./scripts/extract.js",
+        "parse": "ts-node ./src_ts/index.ts; refmt --in-place output/*.re; npm link bs-platform; bsb -make-world;",
         "refmt": "refmt --in-place output/*.re; refmt --in-place --interface=true output/MaterialUi.rei"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
@@ -11,7 +12,7 @@
     "license": "MIT",
     "devDependencies": {
         "babel-cli": "^6.26.0",
-        "babel-plugin-flow-react-proptypes": "^7.0.1",
+        "babel-plugin-flow-react-proptypes": "^14",
         "babel-plugin-preval": "^1.6.2",
         "babel-plugin-transform-flow-strip-types": "^6.22.0",
         "babel-plugin-transform-object-assign": "^6.22.0",
@@ -24,9 +25,9 @@
         "path": "^0.12.7",
         "react": "^16.0.0",
         "react-docgen": "^3.0.0-beta8",
-        "typedoc": "0.9.0"
-    },
-    "dependencies": {
+        "reason-react": "^0.3.1",
+        "ts-node": "^4.1.0",
         "typescript": "^2.5.2"
-    }
+    },
+    "dependencies": {}
 }

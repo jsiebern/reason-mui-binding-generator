@@ -20,7 +20,7 @@ const outputDirectory = path.join(__dirname, '../', 'output', 'json');
 components.forEach(componentPath => {
     const src = readFileSync(componentPath, 'utf8');
 
-    if (src.match(/@ignore - internal component\./)) {
+    if (src.match(/@ignore - internal component\./) || src.match(/@ignore - do not document\./)) {
         return;
     }
 
