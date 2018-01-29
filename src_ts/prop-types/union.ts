@@ -16,10 +16,14 @@ class Union extends Base {
 
     parse() {
         let hasEnum = false;
+        let hasShape = false;
 
         const unionProps = this.propType.value.map(prop => {
             if (prop.name === 'enum') {
                 hasEnum = true;
+            }
+            else if (prop.name === 'shape') {
+                hasShape = true;
             }
             const PropClass = GetClass(prop);
             return (PropClass) ? new PropClass(this.propName, this.propRequired, prop) : false;
@@ -27,6 +31,7 @@ class Union extends Base {
 
         const reasonTypes: string[] = [];
         const enums: string[] = [];
+        const shapes: string[] = [];
         unionProps.reduce((arr, prop) => {
             if (prop) {
                 if (prop.getType() === 'Primitive') {
@@ -50,6 +55,10 @@ class Union extends Base {
                     arr.push(`Enum(${prop.parsed.type})`);
                     enums.push(prop.parsed.type);
                 }
+                else if (prop.getType() === 'Shape') {
+                    arr.push(`Object(${prop.parsed.type})`);
+                    shapes.push(prop.parsed.type);
+                }
                 else {
                     Console.warn(`Warning: Unhandled complex type ${Console.colors.red}${JSON.stringify(prop)}${Console.colors.yellow} in Union ${Console.colors.red}${this.propName}`);
                 }
@@ -64,11 +73,12 @@ class Union extends Base {
 
         this.parsed.type = `[ ${reasonTypes.map(type => `| \`${type} `).join('')} ]`;
         if (this.propRequired) {
-            if (hasEnum) {
+            if (hasEnum || hasShape) {
                 this.parsed.wrapJs = (name) => `
                     (fun
-                        ${enums.map(x => `| \`Enum(${x}) => unwrapValue(\`String(${x}ToJs(${x})))`).join('\n')}
-                        | x => unwrapValue(x)
+                        ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(${x}ToJs(v)))`).join('\n')}
+                        | v => unwrapValue(v)
                     )(${name})
                 `;
             }
@@ -77,11 +87,12 @@ class Union extends Base {
             }
         }
         else {
-            if (hasEnum) {
+            if (hasEnum || hasShape) {
                 this.parsed.wrapJs = (name) => `
                     optionMap(fun
-                        ${enums.map(x => `| \`Enum(${x}) => unwrapValue(\`String(${x}ToJs(${x})))`).join('\n')}
-                        | x => unwrapValue(x)
+                        ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(${x}ToJs(v)))`).join('\n')}
+                        | v => unwrapValue(v)
                     , ${name})
                 `;
             }

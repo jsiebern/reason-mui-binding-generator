@@ -11,3 +11,5 @@ export const isIntersect = (prop: PropType): prop is PropType$Intersect => (prop
 export const isUnion = (prop: PropType): prop is PropType$Union => (prop.name === 'union');
 
 export const isEnum = (prop: PropType): prop is PropType$Enum => (prop.name === 'enum');
+
+export const isShape = (prop: PropType): prop is PropType$Enum => (prop.name === 'shape');

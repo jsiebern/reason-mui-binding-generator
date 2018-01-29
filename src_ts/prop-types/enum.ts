@@ -15,7 +15,7 @@ class Enum extends Base {
     parse() {
         const enumValues = this.propType.value.filter(e => !e.computed).map(e => e.value.substr(0, 1) === '\'' ? e.value.substr(1, e.value.length - 2) : e.value);
         const enumValuesReason = enumValues.map(e => GenerateReasonName(e));
-        const enumName = GenerateReasonName(this.propName, false);
+        const enumName = GenerateReasonName(this.propName, false) + 'Enum';
 
         this.parsed.addToComponent.push(`
 [@bs.deriving jsConverter]

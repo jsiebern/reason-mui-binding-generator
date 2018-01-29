@@ -50,7 +50,18 @@ declare interface PropType$Enum {
     }[]
 }
 
-declare type PropTypeList = 'Primitive' | 'Literal' | 'ObjectSignature' | 'FunctionSignature' | 'Intersect' | 'Union' | 'Enum';
+declare interface PropType$Shape {
+    name: 'shape',
+    value: {
+        [name: string]: {
+            name: 'number' | 'string' | 'union',
+            required: boolean,
+            value?: PropType[],
+        }
+    }
+}
+
+declare type PropTypeList = 'Primitive' | 'Literal' | 'ObjectSignature' | 'FunctionSignature' | 'Intersect' | 'Union' | 'Enum' | 'Shape';
 
 declare type PropType =
     | PropType$Primitive
@@ -59,4 +70,5 @@ declare type PropType =
     | PropType$Intersect
     | PropType$Union
     | PropType$FunctionSignature
-    | PropType$Enum;
+    | PropType$Enum
+    | PropType$Shape;

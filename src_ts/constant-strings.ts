@@ -11,7 +11,7 @@ let unwrapValue =
     | \`Date(d) => toJsUnsafe(d)
     | \`Callback(c) => toJsUnsafe(c)
     | \`Element(e) => toJsUnsafe(e)
-    | \`Object(o) => toJsUnsafe(o)
+    | \`Object(_) => assert false
     | \`Enum(_) => assert false;
 
 let optionMap = (fn, option) =>
