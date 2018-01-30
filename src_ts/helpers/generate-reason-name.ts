@@ -8,7 +8,10 @@ export const isNumeric = (obj: any) => {
 
 const GenerateReasonName = (str: string, toUpper: boolean = true) => {
     str = toUpper ? capitalize(str) : uncapitalize(str);
-    str = str.replace('-', '_');
+
+    while (str.indexOf('-') > -1) {
+        str = str.replace('-', '_');
+    }
     if (['type', 'open', 'in'].indexOf(str) > -1) {
         str = `${str}_`;
     }

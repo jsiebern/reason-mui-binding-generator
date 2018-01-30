@@ -39,10 +39,17 @@ class Primitive extends Base {
                 break;
             case 'node':
             case 'func':
+            case 'element':
                 this.parsed.type = 'ReasonReact.reactElement';
                 break;
             case 'object':
                 this.parsed.type = 'Js.t({..})';
+                break;
+            case 'any':
+                this.parsed.type = `'any_${Math.random().toString(36).substr(2, 1)}`;
+                break;
+            case 'array':
+                this.parsed.type = `[ | \`ArrayGeneric(array('any_${Math.random().toString(36).substr(2, 1)})) ]`;
                 break;
             default:
                 this.valid = false;

@@ -5,6 +5,7 @@ import * as Console from './helpers/console';
 import GetComponents from './helpers/get-components';
 import Component from './component.class';
 import ConstantStrings from './constant-strings';
+import RenderColors from './render-colors';
 
 const parseInit = () => {
     const rawComponents = GetComponents();
@@ -22,12 +23,22 @@ const parseInit = () => {
         }
     });
 
+    // Inheritance
+    components.forEach(c => {
+        if (c.inheritsFrom) {
+            const cInherit = components.find(ci => ci.name === c.inheritsFrom);
+            if (cInherit != null) {
+                c.properties = [...c.properties, ...cInherit.properties.filter(pi => c.properties.find(p => p.name === pi.name) == null)];
+            }
+        }
+    });
+
     const render = components.map(c => {
         Console.info(`Rendering ${c.name}`);
         return c.render();
     }).join('\n');
 
-    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'MaterialUi.re'), ConstantStrings + render);
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'MaterialUi.re'), ConstantStrings + RenderColors + render);
 };
 
 parseInit();

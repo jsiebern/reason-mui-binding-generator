@@ -11,8 +11,14 @@ let unwrapValue =
     | \`Date(d) => toJsUnsafe(d)
     | \`Callback(c) => toJsUnsafe(c)
     | \`Element(e) => toJsUnsafe(e)
+    | \`StringArray(sa) => toJsUnsafe(sa)
+    | \`IntArray(ia) => toJsUnsafe(ia)
+    | \`FloatArray(fa) => toJsUnsafe(fa)
+    | \`ObjectGeneric(og) => toJsUnsafe(og)
+    | \`ArrayGeneric(ag) => toJsUnsafe(ag)
     | \`Object(_) => assert false
-    | \`Enum(_) => assert false;
+    | \`Enum(_) => assert false
+    | \`EnumArray(_) => assert false;
 
 let optionMap = (fn, option) =>
   switch option {

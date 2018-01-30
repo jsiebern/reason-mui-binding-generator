@@ -16,6 +16,7 @@ class Union extends Base {
 
     parse() {
         let hasEnum = false;
+        let hasEnumArray = false;
         let hasShape = false;
 
         const unionProps = this.propType.value.map(prop => {
@@ -31,6 +32,7 @@ class Union extends Base {
 
         const reasonTypes: string[] = [];
         const enums: string[] = [];
+        const enumArrays: string[] = [];
         const shapes: string[] = [];
         unionProps.reduce((arr, prop) => {
             if (prop) {
@@ -43,6 +45,9 @@ class Union extends Base {
                         case '[ | `Int(int) | `Float(float) ]':
                             arr.push('Int(int)');
                             arr.push('Float(float)');
+                            break;
+                        case 'Js.t({..})':
+                            arr.push('ObjectGeneric(Js.t({..}))');
                             break;
                         case 'ReasonReact.reactElement':
                             arr.push('Element(ReasonReact.reactElement)');
@@ -59,6 +64,25 @@ class Union extends Base {
                     arr.push(`Object(${prop.parsed.type})`);
                     shapes.push(prop.parsed.type);
                 }
+                else if (prop.getType() === 'ArrayOf') {
+                    if (prop.parsed.type.substr(0, 1) === '[') {
+                        prop.parsed.type
+                            .replace('[', '')
+                            .replace(']', '')
+                            .split('|')
+                            .map(t => t.trim().replace('`', ''))
+                            .filter(t => t !== '')
+                            .forEach(t => arr.push(t));
+                    }
+                    else {
+                        const type = prop.parsed.type.replace('`', '');
+                        if (type.indexOf('EnumArray') > -1) {
+                            hasEnumArray = true;
+                            enumArrays.push(type.replace('EnumArray(array(', '').replace('))', ''));
+                        }
+                        arr.push(type);
+                    }
+                }
                 else {
                     Console.warn(`Warning: Unhandled complex type ${Console.colors.red}${JSON.stringify(prop)}${Console.colors.yellow} in Union ${Console.colors.red}${this.propName}`);
                 }
@@ -72,13 +96,15 @@ class Union extends Base {
         });
 
         this.parsed.type = `[ ${reasonTypes.map(type => `| \`${type} `).join('')} ]`;
+        const combinedLength = enums.length + enumArrays.length + shapes.length;
         if (this.propRequired) {
-            if (hasEnum || hasShape) {
+            if (hasEnum || hasShape || hasEnumArray) {
                 this.parsed.wrapJs = (name) => `
                     (fun
                         ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${enumArrays.map(x => `| \`EnumArray(v) => unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
                         ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(${x}ToJs(v)))`).join('\n')}
-                        | v => unwrapValue(v)
+                        ${reasonTypes.length > combinedLength ? '| v => unwrapValue(v)' : ''}
                     )(${name})
                 `;
             }
@@ -87,12 +113,13 @@ class Union extends Base {
             }
         }
         else {
-            if (hasEnum || hasShape) {
+            if (hasEnum || hasShape || hasEnumArray) {
                 this.parsed.wrapJs = (name) => `
                     optionMap(fun
                         ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${enumArrays.map(x => `| \`EnumArray(v) => unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
                         ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(${x}ToJs(v)))`).join('\n')}
-                        | v => unwrapValue(v)
+                        ${reasonTypes.length > combinedLength ? '| v => unwrapValue(v)' : ''}
                     , ${name})
                 `;
             }

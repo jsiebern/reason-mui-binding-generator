@@ -1,5 +1,5 @@
 declare interface PropType$Primitive {
-    name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object'
+    name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object' | 'element' | 'any' | 'array'
 }
 
 declare interface PropType$Literal {
@@ -61,7 +61,16 @@ declare interface PropType$Shape {
     }
 }
 
-declare type PropTypeList = 'Primitive' | 'Literal' | 'ObjectSignature' | 'FunctionSignature' | 'Intersect' | 'Union' | 'Enum' | 'Shape';
+declare interface PropType$ArrayOf {
+    name: 'arrayOf',
+    value: PropType,
+}
+
+declare interface PropType$Callback {
+    name: 'func',
+}
+
+declare type PropTypeList = 'Primitive' | 'Literal' | 'ObjectSignature' | 'FunctionSignature' | 'Intersect' | 'Union' | 'Enum' | 'Shape' | 'ArrayOf' | 'Callback';
 
 declare type PropType =
     | PropType$Primitive
@@ -71,4 +80,6 @@ declare type PropType =
     | PropType$Union
     | PropType$FunctionSignature
     | PropType$Enum
+    | PropType$ArrayOf
+    | PropType$Callback
     | PropType$Shape;
