@@ -22,10 +22,13 @@ class Property {
         const { name, signature } = this;
         const isCallback = isCallbackProp(name, signature.type);
 
-        if (signature.description === '@ignore' && !isCallback) {
-            this.valid = false;
-            return;
-        }
+        // if (signature.description === '@ignore' && !isCallback) {
+        //     this.valid = false;
+        //     return;
+        // }
+        // if (name === 'theme') {
+        //     this.signature.required = false;
+        // }
 
         let PropClass = GetClass(signature.type);
         if (isCallback) {
@@ -37,11 +40,11 @@ class Property {
             if (prop.valid) {
                 if (signature.required) {
                     this.make = `~${safeName}: ${prop.parsed.type}`;
-                    this.wrapjs = `"${safeName}": ${prop.parsed.wrapJs(safeName)}`;
+                    this.wrapjs = `"${name}": ${prop.parsed.wrapJs(safeName)}`;
                 }
                 else {
                     this.make = `~${safeName}: option(${prop.parsed.type})=?`;
-                    this.wrapjs = `"${safeName}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(safeName)})`;
+                    this.wrapjs = `"${name}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(safeName)})`;
                 }
                 this.addToComponent = (prop.parsed.addToComponent.length) ? prop.parsed.addToComponent.join('\n') : '';
             }
