@@ -50,7 +50,8 @@ class Property {
                     this.wrapjs = `"${name}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
                     this.propjs = `Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
                 }
-                this.addToComponent = (prop.parsed.addToComponent.length) ? prop.parsed.addToComponent.join('\n') : '';
+
+                this.addToComponent = this.renderAdded(prop.parsed.addToComponent);
             }
             else {
                 this.valid = false;
@@ -59,6 +60,27 @@ class Property {
         else {
             this.valid = false;
         }
+    }
+
+    renderAdded(toAdd: string[]) {
+        if (toAdd.length) {
+            let addedTypes: string[] = [];
+
+            return toAdd.map(add => {
+                const re = new RegExp(/type ([a-zA-Z]*) \=/g).exec(add);
+                if (re !== null) {
+                    const type = re[1];
+                    if (addedTypes.includes(type)) {
+                        return '';
+                    }
+                    addedTypes.push(type);
+                }
+
+                return add;
+            }).join('\n');
+        }
+
+        return '';
     }
 }
 

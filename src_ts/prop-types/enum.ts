@@ -36,7 +36,7 @@ class Enum extends Base {
             }
         });
         const enumValuesReason = enumKeys.map(e => GenerateReasonName(e));
-        const enumName = GenerateReasonName(this.propName, false) + '_' + Math.random().toString(36).substr(2, 1);
+        const enumName = GenerateReasonName(this.propName, false);
 
         if (enumIsNumeric) {
             this.parsed.addToComponent.push(`
