@@ -6,14 +6,17 @@ import Callback from './prop-types/callback';
 class Property {
     signature: PropSignature
     name: string
+    safeName: string
 
     valid: boolean = true
     make: string
     wrapjs: string
+    propjs: string
     addToComponent: string
 
     constructor(name: string, propSignature: PropSignature) {
         this.name = name;
+        this.safeName = GenerateReasonName(name, false);
         this.signature = propSignature;
         this.parse();
     }
@@ -36,15 +39,16 @@ class Property {
         }
         if (PropClass) {
             const prop = new PropClass(name, signature.required, signature.type);
-            const safeName = GenerateReasonName(name, false);
             if (prop.valid) {
                 if (signature.required) {
-                    this.make = `~${safeName}: ${prop.parsed.type}`;
-                    this.wrapjs = `"${name}": ${prop.parsed.wrapJs(safeName)}`;
+                    this.make = `~${this.safeName}: ${prop.parsed.type}`;
+                    this.wrapjs = `"${name}": ${prop.parsed.wrapJs(this.safeName)}`;
+                    this.propjs = prop.parsed.wrapJs(this.safeName);
                 }
                 else {
-                    this.make = `~${safeName}: option(${prop.parsed.type})=?`;
-                    this.wrapjs = `"${name}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(safeName)})`;
+                    this.make = `~${this.safeName}: option(${prop.parsed.type})=?`;
+                    this.wrapjs = `"${name}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
+                    this.propjs = `Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
                 }
                 this.addToComponent = (prop.parsed.addToComponent.length) ? prop.parsed.addToComponent.join('\n') : '';
             }

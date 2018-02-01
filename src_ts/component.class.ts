@@ -35,10 +35,6 @@ class Component {
     }
 
     render() {
-        const strMake = this.properties.length ? this.properties.map(property => property.make).join(',') + ',' : '';
-        const strWrapJs = this.properties.length ? this.properties.map(property => property.wrapjs).join(',') : '';
-        const added = this.properties.length ? this.properties.map(property => property.addToComponent).join('') : '';
-
         const classes = this.component.styles.classes;
         let strClasses = '';
         if (classes.length) {
@@ -66,6 +62,29 @@ class Component {
             `;
         }
 
+        const strMake = this.properties.length ? this.properties.map(property => property.make).join(',') + ',' : '';
+        const strWrapJs = this.properties.length ? this.properties.map(property => property.wrapjs).join(',') : '';
+        const requiredProps = this.properties.filter(prop => prop.signature.required);
+        const strPropJs = this.properties.length ? `
+            let props = ref(${requiredProps.length ? `{
+                ${this.properties.map(prop => (prop.signature.required ? prop.wrapjs : '')).filter(str => str !== '').join(',')}
+            }
+            ` : 'Js.Obj.empty()'});
+            ${this.properties.map(prop => (!prop.signature.required ? `
+                if (${prop.safeName} != None) {
+                    props := Js.Obj.assign(props^, {"${prop.name}": ${prop.propjs}})
+                };
+            ` : '')).join('\n')}
+            ${strClasses ? `
+                if (classes != None) {
+                    props := Js.Obj.assign(props^, {"classes": Js.Nullable.from_opt(classes)})
+                };
+            ` : ''}
+        ` : '';
+        const added = this.properties.length ? this.properties.map(property => property.addToComponent).join('') : '';
+
+        const hasOptionalNode = strMake.includes('option(ReasonReact.reactElement)');
+
         return `
             module ${this.name} = {
                 ${added}
@@ -75,11 +94,16 @@ class Component {
                     ${strMake}
                     ${strClasses ? '~classes: option(Classes.t)=?,' : ''}
                     children
-                ) => ReasonReact.wrapJsForReason(
-                    ~reactClass,
-                    ~props=${strWrapJs ? `{ ${strWrapJs} ${strClasses ? ', "classes": Js.Nullable.from_opt(optionMap(Classes.to_obj, classes))' : ''} }` : (strClasses ? '{ "classes": Js.Nullable.from_opt(optionMap(Classes.to_obj, classes)) }' : 'Js.Obj.empty()')},
-                    children
-                );
+                ) => {
+                    ${hasOptionalNode ? strPropJs : ''}
+                    ReasonReact.wrapJsForReason(
+                        ~reactClass,
+                        ${hasOptionalNode ? '~props=props^' : `
+                            ~props=${strWrapJs ? `{ ${strWrapJs} ${strClasses ? ', "classes": Js.Nullable.from_opt(optionMap(Classes.to_obj, classes))' : ''} }` : (strClasses ? '{ "classes": Js.Nullable.from_opt(optionMap(Classes.to_obj, classes)) }' : 'Js.Obj.empty()')}
+                        `}
+                        ,children
+                    )
+                }
             };
         `;
     }

@@ -49,6 +49,7 @@ module MuiTheme = {
   };
   module Transitions = {
     module Easing = {
+      [@bs.deriving jsConverter]
       type t = {
         easeInOut: string,
         easeOut: string,
@@ -57,6 +58,7 @@ module MuiTheme = {
       };
     };
     module Duration = {
+      [@bs.deriving jsConverter]
       type t = {
         shortest: int,
         shorter: int,
@@ -67,6 +69,7 @@ module MuiTheme = {
         leavingScreen: int
       };
     };
+    [@bs.deriving jsConverter]
     type t = {
       easing: Easing.t,
       duration: Duration.t,
@@ -85,6 +88,17 @@ module MuiTheme = {
     transitions: Transitions.t,
     spacing: Spacing.t,
     zIndex: int
+  };
+  let tFromJs = (theme) => {
+    direction: Direction.fromString(theme##direction),
+    palette: (),
+    typography: (),
+    mixins: (),
+    breakpoints: (),
+    shadows: Js.Array.reduce((lst, entry) => [entry, ...lst], [], theme##shadows),
+    transitions: Transitions.tFromJs(theme##transitions),
+    spacing: {unit: theme##spacing##unit},
+    zIndex: theme##zIndex
   };
 };
 `,
