@@ -12,6 +12,7 @@ class Property {
     make: string
     wrapjs: string
     propjs: string
+    makePropsJs: string
     addToComponent: string
 
     constructor(name: string, propSignature: PropSignature) {
@@ -40,15 +41,13 @@ class Property {
         if (PropClass) {
             const prop = new PropClass(name, signature.required, signature.type);
             if (prop.valid) {
-                if (signature.required) {
-                    this.make = `~${this.safeName}: ${prop.parsed.type}`;
-                    this.wrapjs = `"${name}": ${prop.parsed.wrapJs(this.safeName)}`;
-                    this.propjs = prop.parsed.wrapJs(this.safeName);
-                }
-                else {
+                this.makePropsJs = `~${this.safeName}:${prop.parsed.jsType ? prop.parsed.jsType : prop.parsed.type}`;
+                this.wrapjs = prop.parsed.wrapJs(this.safeName);
+                this.make = `~${this.safeName}: ${prop.parsed.type}`;
+                if (!signature.required) {
                     this.make = `~${this.safeName}: option(${prop.parsed.type})=?`;
-                    this.wrapjs = `"${name}":  Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
-                    this.propjs = `Js.Nullable.from_opt(${prop.parsed.wrapJs(this.safeName)})`;
+                    this.makePropsJs = `${this.makePropsJs}=?`;
+                    this.wrapjs = `?${this.wrapjs}`;
                 }
 
                 this.addToComponent = this.renderAdded(prop.parsed.addToComponent);

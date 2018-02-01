@@ -13,7 +13,7 @@ const GenerateReasonName = (str: string, toUpper: boolean = true) => {
         str = str.replace('-', '_');
     }
     if (['type', 'open', 'in'].indexOf(str) > -1) {
-        str = `${str}_`;
+        str = `_${str}`;
     }
 
     if (isNumeric(str)) {

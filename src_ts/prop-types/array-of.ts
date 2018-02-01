@@ -44,6 +44,8 @@ class ArrayOf extends Base {
         else {
             Console.warn(`Warning: Unhandled complex type ${Console.colors.red}${JSON.stringify(this.propType.value)}${Console.colors.yellow} in ArrayOf.parse ${Console.colors.red}${this.propName}`);
         }
+
+        this.parsed.jsType = `'arrayOf_${Math.random().toString(36).substr(2, 1)}`;
     }
 
     getPrimitive(type: PropType$Primitive['name']) {

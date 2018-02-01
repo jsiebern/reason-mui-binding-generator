@@ -115,18 +115,20 @@ class Union extends Base {
         else {
             if (hasEnum || hasShape || hasEnumArray) {
                 this.parsed.wrapJs = (name) => `
-                    optionMap(fun
+                    Js.Option.map([@bs] ((v) => switch v {
                         ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
                         ${enumArrays.map(x => `| \`EnumArray(v) => unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
                         ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(${x}ToJs(v)))`).join('\n')}
                         ${reasonTypes.length > combinedLength ? '| v => unwrapValue(v)' : ''}
-                    , ${name})
+                    }), ${name})
                 `;
             }
             else {
-                this.parsed.wrapJs = (name) => `optionMap(unwrapValue, ${name})`;
+                this.parsed.wrapJs = (name) => `Js.Option.map([@bs] (v => unwrapValue(v)), ${name})`;
             }
         }
+
+        this.parsed.jsType = `'union_${Math.random().toString(36).substr(2, 1)}`;
     }
 }
 

@@ -60,8 +60,10 @@ class Enum extends Base {
             this.parsed.wrapJs = (name) => `${enumName}ToJs(${name})`;
         }
         else {
-            this.parsed.wrapJs = (name) => `optionMap(${enumName}ToJs, ${name})`;
+            this.parsed.wrapJs = (name) => `Js.Option.map([@bs] (v => ${enumName}ToJs(v)), ${name})`;
         }
+
+        this.parsed.jsType = enumIsNumeric ? 'int' : 'string';
     }
 }
 

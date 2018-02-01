@@ -7,6 +7,7 @@ class Base {
     public valid: boolean;
     public parsed: {
         type: string,
+        jsType: string,
         wrapJs: (name: string) => string,
         addToComponent: string[],
     };
@@ -16,6 +17,7 @@ class Base {
         this.propRequired = required;
         this.parsed = {
             type: '',
+            jsType: '',
             addToComponent: [],
             wrapJs: (name) => name,
         };

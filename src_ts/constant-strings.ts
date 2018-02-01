@@ -19,12 +19,6 @@ let unwrapValue =
     | \`Object(_) => assert false
     | \`Enum(_) => assert false
     | \`EnumArray(_) => assert false;
-
-let optionMap = (fn, option) =>
-  switch option {
-  | Some(value) => Some(fn(value))
-  | None => None
-  };
 `,
   `
 module MuiTheme = {

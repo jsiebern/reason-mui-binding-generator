@@ -63,8 +63,10 @@ class Shape extends Base {
             this.parsed.wrapJs = (name) => `${objectName}ToJs(${name})`;
         }
         else {
-            this.parsed.wrapJs = (name) => `optionMap(${objectName}ToJs, ${name})`;
+            this.parsed.wrapJs = (name) => `Js.Option.map([@bs] (v => ${objectName}ToJs(v)), ${name})`;
         }
+
+        this.parsed.jsType = `'shape_${Math.random().toString(36).substr(2, 1)}`;
     }
 }
 
