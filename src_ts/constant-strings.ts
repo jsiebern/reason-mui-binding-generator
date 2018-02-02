@@ -98,6 +98,10 @@ module MuiTheme = {
 `,
   `
 module WithStyles = {
+  type style = {
+    name: string,
+    styles: ReactDOMRe.Style.t
+  };
   let component = ReasonReact.statelessComponent("WithStyles");
   let make = (~render, ~classes: Js.t({..}), _children) => {
     ...component,
@@ -110,25 +114,26 @@ module WithStyles = {
   let creteStylesWrapper = (styles) => withStylesExt(styles);
   let make =
       (
-        ~styles: option(Js.t({..}))=?,
-        ~stylesWithTheme: option((MuiTheme.t => Js.t({..})))=?,
+        ~classes: option(list(style))=?,
+        ~classesWithTheme: option((MuiTheme.t => list(style)))=?,
         ~render,
         children
       ) =>
     ReasonReact.wrapJsForReason(
       ~reactClass={
-        let wrapper =
-          creteStylesWrapper(
-            switch styles {
-            | Some(styles) => styles
-            | None =>
-              switch stylesWithTheme {
-              | Some(stylesWithTheme) =>
-                toJsUnsafe((theme) => stylesWithTheme(MuiTheme.tFromJs(theme)))
-              | None => Js.Obj.empty()
-              }
+        let lst =
+          switch classes {
+          | Some(classes) => classes
+          | None =>
+            switch classesWithTheme {
+            | Some(classesWithTheme) =>
+              toJsUnsafe((theme) => classesWithTheme(MuiTheme.tFromJs(theme)))
+            | None => []
             }
-          );
+          };
+        let classDict: Js.Dict.t(ReactDOMRe.Style.t) = Js.Dict.empty();
+        StdLabels.List.iter(~f=(style) => Js.Dict.set(classDict, style.name, style.styles), lst);
+        let wrapper = creteStylesWrapper(classDict);
         [@bs]
         wrapper(
           ReasonReact.wrapReasonForJs(
