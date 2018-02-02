@@ -121,19 +121,23 @@ module WithStyles = {
       ) =>
     ReasonReact.wrapJsForReason(
       ~reactClass={
-        let lst =
+        let generateDict = (lst: list(style)) => {
+          let classDict: Js.Dict.t(ReactDOMRe.Style.t) = Js.Dict.empty();
+          StdLabels.List.iter(~f=(style) => Js.Dict.set(classDict, style.name, style.styles), lst);
+          classDict
+        };
+        let wrapper =
           switch classes {
-          | Some(classes) => classes
+          | Some(classes) => creteStylesWrapper(generateDict(classes))
           | None =>
             switch classesWithTheme {
             | Some(classesWithTheme) =>
-              toJsUnsafe((theme) => classesWithTheme(MuiTheme.tFromJs(theme)))
-            | None => []
+              creteStylesWrapper(
+                toJsUnsafe((theme) => generateDict(classesWithTheme(MuiTheme.tFromJs(theme))))
+              )
+            | None => creteStylesWrapper(generateDict([]))
             }
           };
-        let classDict: Js.Dict.t(ReactDOMRe.Style.t) = Js.Dict.empty();
-        StdLabels.List.iter(~f=(style) => Js.Dict.set(classDict, style.name, style.styles), lst);
-        let wrapper = creteStylesWrapper(classDict);
         [@bs]
         wrapper(
           ReasonReact.wrapReasonForJs(
