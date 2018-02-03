@@ -111,7 +111,7 @@ module WithStyles = {
   [@bs.module "material-ui/styles"]
   external withStylesExt : 'styles => withStylesComponent('component) =
     "withStyles";
-  let creteStylesWrapper = (styles) => withStylesExt(styles);
+  let createStylesWrapper = (styles) => withStylesExt(styles);
   let make =
       (
         ~classes: option(list(style))=?,
@@ -128,14 +128,14 @@ module WithStyles = {
         };
         let wrapper =
           switch classes {
-          | Some(classes) => creteStylesWrapper(generateDict(classes))
+          | Some(classes) => createStylesWrapper(generateDict(classes))
           | None =>
             switch classesWithTheme {
             | Some(classesWithTheme) =>
-              creteStylesWrapper(
+              createStylesWrapper(
                 toJsUnsafe((theme) => generateDict(classesWithTheme(MuiTheme.tFromJs(theme))))
               )
-            | None => creteStylesWrapper(generateDict([]))
+            | None => createStylesWrapper(generateDict([]))
             }
           };
         [@bs]
