@@ -1,0 +1,20 @@
+{
+    "name": "ppx_withStyles",
+    "version": "0.1.0",
+    "sources": [
+        "./src"
+    ],
+    "entries": [
+        {
+            "backend": "native",
+            "main-module": "Ppx_withStyles"
+        }
+    ],
+    "refmt": 3,
+    "bsc-flags": [
+        "-bs-super-errors"
+    ],
+    "ocamlfind-dependencies": [
+        "ocaml-migrate-parsetree"
+    ]
+}

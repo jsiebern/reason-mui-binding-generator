@@ -97,6 +97,52 @@ module MuiTheme = {
 };
 `,
   `
+module type WithStylesSafeTemplate = {
+  type classRecord;
+  type classRecordJs;
+  type classRecordStrings;
+  type classRecordStringsJs;
+  let classRecordToJs: classRecord => classRecordJs;
+  let classRecordStringsFromJs: classRecordStringsJs => classRecordStrings;
+  let classes: classRecord;
+};
+
+module WithStylesSafe = (S: WithStylesSafeTemplate) => {
+  /* Component */
+  let component = ReasonReact.statelessComponent("WithStyles");
+  let makeStateLessComponent = (~render: ReasonReact.reactElement, _children) => {
+    ...component,
+    render: _self => render
+  };
+  /* Imported from MUI */
+  type withStylesComponent('a) = [@bs] ('a => ReasonReact.reactClass);
+  [@bs.module "material-ui/styles"]
+  external withStylesExt : 'styles => withStylesComponent('component) =
+    "withStyles";
+  let createStylesWrapper = styles => withStylesExt(styles);
+  let make =
+      (~render: S.classRecordStrings => ReasonReact.reactElement, children) =>
+    ReasonReact.wrapJsForReason(
+      ~reactClass={
+        let wrapper = createStylesWrapper(S.classRecordToJs(S.classes));
+        [@bs]
+        wrapper(
+          ReasonReact.wrapReasonForJs(~component, jsProps =>
+            makeStateLessComponent(
+              ~render=
+                jsProps##render(S.classRecordStringsFromJs(jsProps##classes)),
+              [||]
+            )
+          )
+        );
+      },
+      ~props={"render": render},
+      children
+    );
+};
+  `
+  ,
+  `
 module WithStyles = {
   type style = {
     name: string,

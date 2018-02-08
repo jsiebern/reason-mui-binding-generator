@@ -3,8 +3,10 @@
     "version": "0.0.1",
     "description": "Reason binding generator for material-ui v1",
     "scripts": {
+        "bsb": "npm link bs-platform; bsb -make-world;",
         "extract": "babel-node ./scripts/extract.js",
-        "parse": "ts-node ./src_ts/index.ts; refmt --in-place output/*.re; npm link bs-platform; bsb -make-world;"
+        "parse": "ts-node ./src_ts/index.ts; refmt --in-place output/*.re; npm link bs-platform; bsb -make-world;",
+        "ppx": "cd ./ppx-generator; yarn"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
     "author": "Jonathan Siebern <jsiebern88@gmail.com>",
