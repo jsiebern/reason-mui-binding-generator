@@ -4,9 +4,9 @@
   "author": "Jonathan Siebern <jsiebern88@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "bsb -make-world -backend native; cp ./lib/bs/native/ppx_withStyles.native ./../output/ppx_withStyles",
-    "watch": "bsb -make-world -backend native -w",
-    "clean": "bsb -clean-world"
+    "build": "./node_modules/.bin/bsb -make-world -backend native; cp ./lib/bs/native/ppx_withStyles.native ./../output/ppx_withStyles",
+    "watch": "./node_modules/.bin/bsb -make-world -backend native -w",
+    "clean": "./node_modules/.bin/bsb -clean-world"
   },
   "dependencies": {
     "bs-platform": "bsansouci/bsb-native#2.1.1"
