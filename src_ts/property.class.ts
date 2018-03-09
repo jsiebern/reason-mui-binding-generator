@@ -24,8 +24,9 @@ class Property {
 
     parse() {
         const { name, signature } = this;
-        const isCallback = isCallbackProp(name, signature.type);
+        signature.type = signature.type || signature.flowType || { name: 'any' };
 
+        const isCallback = isCallbackProp(name, signature.type);
         // if (signature.description === '@ignore' && !isCallback) {
         //     this.valid = false;
         //     return;

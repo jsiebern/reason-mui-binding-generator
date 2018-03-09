@@ -1,4 +1,4 @@
-export const isPrimitive = (prop: PropType): prop is PropType$Primitive => (Object.keys(prop).length === 1 && prop.name != null);
+export const isPrimitive = (prop: PropType): prop is PropType$Primitive => (Object.keys(prop).length === 1 && prop.name != null) || (prop.name != null && prop.name === 'Element');
 
 export const isLiteral = (prop: PropType): prop is PropType$Literal => (prop.name === 'literal');
 

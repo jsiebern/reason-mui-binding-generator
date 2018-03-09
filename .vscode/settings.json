@@ -1,4 +1,0 @@
-{
-    "search.useIgnoreFiles": false,
-    "reason.path.bsb": "./ppx-generator/node_modules/.bin/bsb"
-}

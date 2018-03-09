@@ -10,6 +10,7 @@ class Union extends Base {
 
     constructor(name: string, required: boolean, propType: PropType$Union) {
         super(name, required, propType);
+        propType.value = propType.value || propType.elements;
         this.propType = propType;
         this.parse();
     }
@@ -19,7 +20,7 @@ class Union extends Base {
         let hasEnumArray = false;
         let hasShape = false;
 
-        const unionProps = this.propType.value.map(prop => {
+        const unionProps = this.propType.value != null ? this.propType.value.map(prop => {
             if (prop.name === 'enum') {
                 hasEnum = true;
             }
@@ -28,7 +29,7 @@ class Union extends Base {
             }
             const PropClass = GetClass(prop);
             return (PropClass) ? new PropClass(this.propName, this.propRequired, prop) : false;
-        }).filter(prop => prop !== false && prop.valid);
+        }).filter(prop => prop !== false && prop.valid) : [];
 
         const reasonTypes: string[] = [];
         const enums: string[] = [];
@@ -50,6 +51,9 @@ class Union extends Base {
                             arr.push('ObjectGeneric(Js.t({..}))');
                             break;
                         case 'ReasonReact.reactElement':
+                        case 'Element<any>':
+                        case 'element':
+                        case 'Element':
                             arr.push('Element(ReasonReact.reactElement)');
                             break;
                         default:

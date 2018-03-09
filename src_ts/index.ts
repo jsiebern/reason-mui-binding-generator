@@ -16,6 +16,7 @@ const parseInit = () => {
             return new Component(jsonString);
         }
         catch (e) {
+            console.log(e);
             Console.error(e);
             Console.error(jsonString);
             process.exit();

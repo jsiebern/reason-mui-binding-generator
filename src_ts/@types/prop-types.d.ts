@@ -1,5 +1,5 @@
 declare interface PropType$Primitive {
-    name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object' | 'element' | 'any' | 'array'
+    name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object' | 'element' | 'any' | 'array' | 'Element' | 'Element<any>' | 'Function' | 'Node'
 }
 
 declare interface PropType$Literal {
@@ -39,7 +39,8 @@ declare interface PropType$Intersect {
 
 declare interface PropType$Union {
     name: 'union',
-    value: PropType[],
+    value?: PropType[],
+    elements?: PropType[],
 }
 
 declare interface PropType$Enum {

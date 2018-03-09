@@ -1,5 +1,6 @@
 declare interface PropSignature {
-    type: PropType,
+    type?: PropType,
+    flowType?: PropType,
     required: boolean,
     description: string | '@ignore',
     defaultValue: {
