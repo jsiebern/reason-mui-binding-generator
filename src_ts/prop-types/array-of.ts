@@ -35,6 +35,9 @@ class ArrayOf extends Base {
 
             this.parsed.type = `[ ${t.map(s => `| \`${s}`).join('')} ]`;
         }
+        else if (Identify.isPrimitive(this.propType.value)) {
+            this.parsed.type = `[ ${this.getPrimitive(this.propType.value.name).map(s => `| \`${s}`).join('')} ]`;
+        }
         else if (Identify.isEnum(this.propType.value)) {
             const e = new Enum(this.propName, true, this.propType.value);
 

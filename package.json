@@ -14,7 +14,7 @@
     "devDependencies": {
         "@types/node": "^9.4.7",
         "babel-cli": "^6.26.0",
-        "babel-plugin-flow-react-proptypes": "^20.1.0",
+        "babel-plugin-flow-react-proptypes": "^21.0.0",
         "babel-plugin-preval": "^1.6.2",
         "babel-plugin-transform-flow-strip-types": "^6.22.0",
         "babel-plugin-transform-object-assign": "^6.22.0",
@@ -27,7 +27,7 @@
         "react": "^16.0.0",
         "react-docgen": "^3.0.0-beta8",
         "reason-react": "^0.3.1",
-        "ts-node": "^4.1.0",
+        "ts-node": "^5.0.1",
         "typescript": "^2.5.2"
     },
     "dependencies": {}

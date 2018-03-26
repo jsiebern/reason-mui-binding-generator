@@ -1,6 +1,7 @@
 import ComponentFromJson from './helpers/component-from-json';
 import Property from './property.class';
 import GenerateReasonName from './helpers/generate-reason-name';
+import CustomProps from './custom-props';
 
 const ignoreProperties = ['classes', 'children'];
 
@@ -17,8 +18,17 @@ class Component {
         this.parse();
     }
 
+    injectCustomProps() {
+        this.component.props = { ...this.component.props, ...CustomProps[this.name] };
+    }
+
     parse() {
         this.name = this.component.name;
+
+        if (CustomProps[this.name] != null) {
+            this.injectCustomProps();
+        }
+
         this.modulePath = this.component.importPath;
         this.inheritsFrom = this.component.inheritsFrom;
 
