@@ -17,7 +17,13 @@ class Property {
 
     constructor(name: string, propSignature: PropSignature) {
         this.name = name;
-        this.safeName = GenerateReasonName(name, false);
+
+        const firstLetter = this.name.substr(0, 1);
+        let useName = this.name;
+        if (firstLetter === firstLetter.toUpperCase()) {
+            useName = `_${useName}`;
+        }
+        this.safeName = GenerateReasonName(useName, false);
         this.signature = propSignature;
         this.parse();
     }

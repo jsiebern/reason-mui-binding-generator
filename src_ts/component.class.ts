@@ -36,7 +36,7 @@ class Component {
         const doneWithDouble: string[] = [];
         this.properties = keys.filter(key => ignoreProperties.indexOf(key) === -1).map(key => {
             let newKey = key;
-            if (doneWithDouble.indexOf(key.toLowerCase()) === -1 && keys.filter(k => key !== k).map(k => k.toLowerCase()).indexOf(newKey.toLowerCase()) > -1) {
+            if (doneWithDouble.indexOf(key.toLowerCase()) === -1 && keys.filter(k => key !== k)/*.map(k => k.toLowerCase())*/.indexOf(newKey) > -1) {
                 doneWithDouble.push(key.toLowerCase());
                 newKey += '2';
             }
