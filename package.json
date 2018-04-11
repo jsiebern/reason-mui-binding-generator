@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "Reason binding generator for material-ui v1",
     "scripts": {
-        "bsb": "npm link bs-platform; bsb -make-world;",
+        "bsb": "bsb -make-world;",
         "extract": "babel-node ./scripts/extract.js",
-        "parse": "ts-node ./src_ts/index.ts; refmt --in-place output/*.re; npm link bs-platform; bsb -make-world;",
+        "parse": "ts-node ./src_ts/index.ts; refmt --in-place output/*.re; bsb -make-world;",
         "ppx": "cd ./ppx-generator; yarn"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
@@ -14,13 +14,14 @@
     "devDependencies": {
         "@types/node": "^9.4.7",
         "babel-cli": "^6.26.0",
-        "babel-plugin-flow-react-proptypes": "^21.0.0",
+        "babel-plugin-flow-react-proptypes": "~23.0.0",
         "babel-plugin-preval": "^1.6.2",
         "babel-plugin-transform-flow-strip-types": "^6.22.0",
         "babel-plugin-transform-object-assign": "^6.22.0",
         "babel-preset-env": "^1.6.1",
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-1": "^6.24.1",
+        "bs-platform": "^2.2.3",
         "fs": "^0.0.1-security",
         "next": "^5.0.0",
         "path": "^0.12.7",

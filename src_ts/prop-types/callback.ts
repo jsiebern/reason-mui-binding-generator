@@ -17,7 +17,7 @@ enum CallbackTypes {
     AnimationCallback = 'ReasonReact.Callback.t(ReactEventRe.Animation.t)',
     TransitionCallback = 'ReasonReact.Callback.t(ReactEventRe.Transition.t)',
     GenericCallback = 'ReasonReact.Callback.t(ReactEventRe.Synthetic.t)',
-    EmptyCallback = 'unit => unit',
+    EmptyCallback = '\'emptyCallback',
 };
 
 const getCallbackType = (propName: string) => {
@@ -137,10 +137,12 @@ const getCallbackType = (propName: string) => {
         case 'onDirty':
         case 'onRendered':
         case 'onOpen':
-        case 'onChangePage':
-        case 'onChangeRowsPerPage':
         case 'onDelete':
-            return CallbackTypes.EmptyCallback;
+            return `${CallbackTypes.EmptyCallback}_${Math.random().toString(36).substr(2, 1)}`;
+        case 'onChangePage':
+            return '(ReactEventRe.Mouse.t, int) => unit';
+        case 'onChangeRowsPerPage':
+            return CallbackTypes.FormCallback;
         default:
             Console.warn(`Warning: Unhandled callback type ${Console.colors.red}${propName}${Console.colors.yellow} in Callback.getCallbackType ${Console.colors.red}`);
             return CallbackTypes.GenericCallback;

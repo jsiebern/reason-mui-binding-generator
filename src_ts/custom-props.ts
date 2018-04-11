@@ -82,4 +82,13 @@ export default {
             description: '-',
         },
     },
+    Menu: {
+        anchorEl: {
+            type: {
+                name: 'any'
+            },
+            required: false,
+            description: '-',
+        },
+    },
 };
