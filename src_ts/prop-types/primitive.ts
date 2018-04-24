@@ -20,13 +20,6 @@ class Primitive extends Base {
             case 'bool':
             case 'boolean':
                 this.parsed.type = 'bool';
-                this.parsed.jsType = 'Js.boolean';
-                if (this.propRequired) {
-                    this.parsed.wrapJs = (name) => `Js.Boolean.to_js_boolean(${name})`;
-                }
-                else {
-                    this.parsed.wrapJs = (name) => `Js.Option.map([@bs] ((v) => Js.Boolean.to_js_boolean(v)), ${name})`;
-                }
                 break;
             case 'number':
                 this.parsed.type = '[ | `Int(int) | `Float(float) ]';

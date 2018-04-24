@@ -2,6 +2,13 @@ declare interface PropType$Primitive {
     name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object' | 'element' | 'any' | 'array' | 'Element' | 'Element<any>' | 'Function' | 'Node'
 }
 
+declare interface PropType$Custom {
+    name: 'custom',
+    type: string,
+    jsType?: string,
+    wrapJs?: (name: string) => string,
+}
+
 declare interface PropType$Literal {
     name: 'literal',
     value: string,
@@ -83,4 +90,5 @@ declare type PropType =
     | PropType$Enum
     | PropType$ArrayOf
     | PropType$Callback
+    | PropType$Custom
     | PropType$Shape;

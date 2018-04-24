@@ -16,5 +16,7 @@ export const isShape = (prop: PropType): prop is PropType$Shape => (prop.name ==
 
 export const isArrayOf = (prop: PropType): prop is PropType$ArrayOf => (prop.name === 'arrayOf');
 
+export const isCustom = (prop: PropType): prop is PropType$Custom => (prop.name === 'custom');
+
 export const isCallBackName = (name: string) => new RegExp(/^on[A-Z]/g).test(name);
 export const isCallback = (propName: string, prop: PropType): prop is PropType$Callback => (prop.name === 'func' && isCallBackName(propName));

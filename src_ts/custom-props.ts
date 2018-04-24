@@ -91,4 +91,14 @@ export default {
             description: '-',
         },
     },
+    Tabs: {
+        onChange: {
+            type: {
+                name: 'custom',
+                type: '(ReactEventRe.Mouse.t, int) => unit',
+            },
+            required: false,
+            description: '',
+        },
+    },
 };

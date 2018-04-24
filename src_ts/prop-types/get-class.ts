@@ -7,6 +7,7 @@ import Union from './union';
 import Enum from './enum';
 import Shape from './shape';
 import ArrayOf from './array-of';
+import Custom from './custom';
 
 const GetClass = (propType: PropType): false | typeof Base => {
     if (Identify.isPrimitive(propType)) {
@@ -23,6 +24,9 @@ const GetClass = (propType: PropType): false | typeof Base => {
     }
     else if (Identify.isArrayOf(propType)) {
         return ArrayOf;
+    }
+    else if (Identify.isCustom(propType)) {
+        return Custom;
     }
     else {
         Console.warn(`Warning: Complex type ${Console.colors.red}${JSON.stringify(propType)}${Console.colors.yellow} does not map to anything`);

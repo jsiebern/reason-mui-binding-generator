@@ -21,17 +21,19 @@ class ArrayOf extends Base {
             let t: string[] = [];
 
             const union = this.propType.value;
-            union.value.forEach(prop => {
-                if (Identify.isPrimitive(prop)) {
-                    t = [...t, ...this.getPrimitive(prop.name)];
-                }
-                else if (Identify.isEnum(prop)) {
+            if (typeof union.value !== 'undefined') {
+                union.value.forEach(prop => {
+                    if (Identify.isPrimitive(prop)) {
+                        t = [...t, ...this.getPrimitive(prop.name)];
+                    }
+                    else if (Identify.isEnum(prop)) {
 
-                }
-                else {
-                    Console.warn(`Warning: Unhandled complex type ${Console.colors.red}${JSON.stringify(prop)}${Console.colors.yellow} in ArrayOf.union.parse ${Console.colors.red}${this.propName}`);
-                }
-            });
+                    }
+                    else {
+                        Console.warn(`Warning: Unhandled complex type ${Console.colors.red}${JSON.stringify(prop)}${Console.colors.yellow} in ArrayOf.union.parse ${Console.colors.red}${this.propName}`);
+                    }
+                });
+            }
 
             this.parsed.type = `[ ${t.map(s => `| \`${s}`).join('')} ]`;
         }
