@@ -101,4 +101,14 @@ export default {
             description: '',
         },
     },
+    Checkbox: {
+        onChange: {
+            type: {
+                name: 'custom',
+                type: '(ReactEventRe.Mouse.t, bool) => unit',
+            },
+            required: false,
+            description: '',
+        },
+    },
 };
