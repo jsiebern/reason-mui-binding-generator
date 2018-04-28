@@ -5,7 +5,7 @@ import GetPropertyParser from './property-parser';
 
 class Property {
     // Component Reference
-    readonly _component: Component;
+    private _component: Component;
 
     // Raw Prop Values
     readonly _signature: PropSignature;
@@ -43,7 +43,11 @@ class Property {
         return this._description;
     }
 
-    private parse() {
+    public set component(componentReference: Component) {
+        this._component = componentReference;
+    }
+
+    public parse() {
         if (this._signature.type != null) {
             const Parser = GetPropertyParser(this._signature.type);
             if (Parser) {

@@ -139,4 +139,7 @@ export default {
             description: '-',
         },
     },
+    IconButton: {
+
+    },
 };

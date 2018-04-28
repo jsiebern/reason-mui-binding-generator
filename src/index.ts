@@ -26,6 +26,16 @@ const parseInit = () => {
         }
     });
 
+    // Inheritance
+    components.forEach(c => {
+        if (c != null && c.inheritsFrom) {
+            const cInherit = components.find(ci => ci != null && ci.name === c.inheritsFrom);
+            if (cInherit != null) {
+                c.mergeProperties(cInherit.properties);
+            }
+        }
+    });
+
     const rendered = components.map(c => {
         if (c == null) {
             return '';

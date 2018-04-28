@@ -35,6 +35,16 @@ class Component {
         return this._properties;
     }
 
+    public get inheritsFrom() {
+        return this._component.inheritsFrom;
+    }
+
+    public mergeProperties(toMerge: Property[]) {
+        const filtered = toMerge.filter(pi => this._properties.find(p => p.name === pi.name) == null);
+        filtered.forEach(prop => { prop.component = this; prop.parse(); });
+        this._properties = [...this._properties, ...filtered];
+    }
+
     private getSectionByKey(section: string) {
         switch (section) {
             case 'Make':
