@@ -1,3 +1,3 @@
 export default {
-    MuiPath: '/path/to/material-ui/git/repo'
+    MuiPath: '/path/to/material-ui/git/repo/packages/material-ui'
 };

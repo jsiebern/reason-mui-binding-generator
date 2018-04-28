@@ -1,0 +1,1 @@
+export { default as ThemeOptional } from './plugin.theme-optional';

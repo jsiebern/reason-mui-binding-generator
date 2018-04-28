@@ -7,12 +7,20 @@ export const isNumeric = (obj: any) => {
 }
 
 const GenerateReasonName = (str: string, toUpper: boolean = true) => {
-    str = toUpper ? capitalize(str) : uncapitalize(str);
+    if (toUpper) {
+        str = capitalize(str);
+    }
+    else {
+        const firstLetter = str.substr(0, 1);
+        if (firstLetter === firstLetter.toUpperCase()) {
+            str = `_${str}`;
+        }
+    }
 
     while (str.indexOf('-') > -1) {
         str = str.replace('-', '_');
     }
-    if (['type', 'open', 'in'].indexOf(str) > -1) {
+    if (['type', 'open', 'in', 'ref', 'to', 'for'].indexOf(str) > -1) {
         str = `_${str}`;
     }
 

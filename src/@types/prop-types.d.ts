@@ -1,10 +1,10 @@
 declare interface PropType$Primitive {
-    name: 'string' | 'number' | 'boolean' | 'bool' | 'any' | 'void' | 'Object' | 'String' | 'func' | 'node' | 'object' | 'element' | 'any' | 'array' | 'Element' | 'Element<any>' | 'Function' | 'Node'
+    name: 'string' | 'number' | 'boolean' | 'bool' | 'int' | 'float' | 'any' | 'void' | 'Object' | 'String' | 'node' | 'object' | 'element' | 'any' | 'array' | 'Element' | 'ReactElement' | 'Element<any>' | 'Function' | 'Node' | 'ComponentType<object>'
 }
 
 declare interface PropType$Custom {
     name: 'custom',
-    type: string,
+    reasonType: string,
     jsType?: string,
     wrapJs?: (name: string) => string,
 }
@@ -14,13 +14,17 @@ declare interface PropType$Literal {
     value: string,
 }
 
+declare interface PropType$Func {
+    name: 'func',
+}
+
 declare interface PropType$ObjectSignature {
     name: 'signature',
     type: 'object',
     raw: string,
     signature: {
         properties: {
-            [key: string]: string,
+            [key: string]: PropType,
         },
     },
 }
@@ -33,6 +37,7 @@ declare interface PropType$FunctionSignature {
         arguments: {
             name: string,
             type: PropType,
+            required?: boolean,
         }[],
         return: PropType
     },
@@ -59,13 +64,9 @@ declare interface PropType$Enum {
 }
 
 declare interface PropType$Shape {
-    name: 'shape',
+    name: 'shape' | 'shapeArgument',
     value: {
-        [name: string]: {
-            name: 'number' | 'string' | 'union',
-            required: boolean,
-            value?: PropType[],
-        }
+        [name: string]: PropType & { required: boolean },
     }
 }
 
@@ -90,5 +91,5 @@ declare type PropType =
     | PropType$Enum
     | PropType$ArrayOf
     | PropType$Callback
-    | PropType$Custom
-    | PropType$Shape;
+    | PropType$Shape
+    | PropType$Custom;

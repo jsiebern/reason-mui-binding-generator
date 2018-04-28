@@ -91,24 +91,52 @@ export default {
             description: '-',
         },
     },
-    Tabs: {
-        onChange: {
+    TablePagination: {
+        labelRowsPerPage: {
             type: {
                 name: 'custom',
-                type: '(ReactEventRe.Mouse.t, int) => unit',
+                reasonType: '({. "from": int, "to": int, "count": int, "page": int}) => ReasonReact.reactElement',
+                jsType: '\'labelRowsPerPage',
             },
             required: false,
-            description: '',
+            description: '-',
+        },
+        labelDisplayedRows: {
+            type: {
+                name: 'custom',
+                reasonType: '({. "from": int, "to": int, "count": int}) => string',
+                jsType: '\'labelDisplayedRows',
+            },
+            required: false,
+            description: '-',
+        },
+        rowsPerPageOptions: {
+            type: {
+                name: 'arrayOf',
+                value: {
+                    name: 'int',
+                }
+            },
+            required: false,
+            description: '-',
         },
     },
-    Checkbox: {
-        onChange: {
+    TableCell: {
+        colSpan: {
             type: {
-                name: 'custom',
-                type: '(ReactEventRe.Mouse.t, bool) => unit',
+                name: 'int',
             },
             required: false,
-            description: '',
+            description: '-',
+        },
+    },
+    TableRow: {
+        onDoubleClick: {
+            type: {
+                name: 'func',
+            },
+            required: false,
+            description: '-',
         },
     },
 };

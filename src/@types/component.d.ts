@@ -1,6 +1,5 @@
 declare interface PropSignature {
     type?: PropType,
-    flowType?: PropType,
     required: boolean,
     description: string | '@ignore',
     defaultValue: {
@@ -19,8 +18,10 @@ declare interface ComponentSignature {
     },
     filename: string,
     importPath: string,
+    importName?: string,
     inheritsFrom: string,
     props: {
         [propName: string]: PropSignature
     },
+    basename?: string,
 }
