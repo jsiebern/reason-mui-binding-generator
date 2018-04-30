@@ -109,19 +109,17 @@ class Component {
         const hasProps = this._component.props != null || this._component.styles.classes.length > 0;
 
         return `
-            module ${this.name} = {
-                ${this.renderSection('Module')}
-                ${hasProps ? `[@bs.obj] external makeProps : (${this.renderSection('MakeProps')} unit) => _ = "";` : ''}
-                [@bs.module "${this._component.importPath}"] external reactClass : ReasonReact.reactClass = "${this._component.importName || 'default'}";
-                let make = (
-                    ${this.renderSection('Make')}
+            ${this.renderSection('Module')}
+            ${hasProps ? `[@bs.obj] external makeProps : (${this.renderSection('MakeProps')} unit) => _ = "";` : ''}
+            [@bs.module "${this._component.importPath}"] external reactClass : ReasonReact.reactClass = "${this._component.importName || 'default'}";
+            let make = (
+                ${this.renderSection('Make')}
+                children
+            ) => ReasonReact.wrapJsForReason(
+                    ~reactClass,
+                    ~props=${!hasProps ? 'Js.Obj.empty()' : `makeProps(${this.renderSection('WrapJs')} ())`},
                     children
-                ) => ReasonReact.wrapJsForReason(
-                        ~reactClass,
-                        ~props=${!hasProps ? 'Js.Obj.empty()' : `makeProps(${this.renderSection('WrapJs')} ())`},
-                        children
-                    );
-            };
+                );
         `;
     }
 }

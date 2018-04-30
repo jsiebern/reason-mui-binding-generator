@@ -27,10 +27,10 @@ const factory = (propertyType: PropType$Primitive) => {
                     this._jsType = `'number_${Math.random().toString(36).substr(2, 1)}`;
 
                     if (this.required) {
-                        this._wrapJs = (name) => `unwrapValue(${name})`;
+                        this._wrapJs = (name) => `MaterialUi_Helpers.unwrapValue(${name})`;
                     }
                     else {
-                        this._wrapJs = (name) => `Js.Option.map([@bs] ((v) => unwrapValue(v)), ${name})`;
+                        this._wrapJs = (name) => `Js.Option.map([@bs] ((v) => MaterialUi_Helpers.unwrapValue(v)), ${name})`;
                     }
                     break;
                 case 'int':

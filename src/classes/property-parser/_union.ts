@@ -100,30 +100,30 @@ const factory = (propertyType: PropType$Union) => {
                 if (this._hasEnum || this._hasShape || this._hasEnumArray) {
                     this._wrapJs = (name) => `
                     (fun
-                        ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
-                        ${enumArrays.map(x => `| \`EnumArray(v) => unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
-                        ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(convert${upperFirst(x.substr(4))}(v)))`).join('\n')}
-                        ${reasonTypes.length > combinedLength ? '| v => unwrapValue(v)' : ''}
+                        ${enums.map(x => `| \`Enum(v) => MaterialUi_Helpers.unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${enumArrays.map(x => `| \`EnumArray(v) => MaterialUi_Helpers.unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
+                        ${shapes.map(x => `| \`Object(v) => MaterialUi_Helpers.unwrapValue(\`Element(convert${upperFirst(x.substr(4))}(v)))`).join('\n')}
+                        ${reasonTypes.length > combinedLength ? '| v => MaterialUi_Helpers.unwrapValue(v)' : ''}
                     )(${name})
                 `;
                 }
                 else {
-                    this._wrapJs = (name) => `unwrapValue(${name})`;
+                    this._wrapJs = (name) => `MaterialUi_Helpers.unwrapValue(${name})`;
                 }
             }
             else {
                 if (this._hasEnum || this._hasShape || this._hasEnumArray) {
                     this._wrapJs = (name) => `
                     Js.Option.map([@bs] ((v) => switch v {
-                        ${enums.map(x => `| \`Enum(v) => unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
-                        ${enumArrays.map(x => `| \`EnumArray(v) => unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
-                        ${shapes.map(x => `| \`Object(v) => unwrapValue(\`Element(convert${upperFirst(x.substr(4))}(v)))`).join('\n')}
-                        ${reasonTypes.length > combinedLength ? '| v => unwrapValue(v)' : ''}
+                        ${enums.map(x => `| \`Enum(v) => MaterialUi_Helpers.unwrapValue(\`String(${x}ToJs(v)))`).join('\n')}
+                        ${enumArrays.map(x => `| \`EnumArray(v) => MaterialUi_Helpers.unwrapValue(\`Element(Array.map(${x}ToJs, v)))`).join('\n')}
+                        ${shapes.map(x => `| \`Object(v) => MaterialUi_Helpers.unwrapValue(\`Element(convert${upperFirst(x.substr(4))}(v)))`).join('\n')}
+                        ${reasonTypes.length > combinedLength ? '| v => MaterialUi_Helpers.unwrapValue(v)' : ''}
                     }), ${name})
                 `;
                 }
                 else {
-                    this._wrapJs = (name) => `Js.Option.map([@bs] (v => unwrapValue(v)), ${name})`;
+                    this._wrapJs = (name) => `Js.Option.map([@bs] (v => MaterialUi_Helpers.unwrapValue(v)), ${name})`;
                 }
             }
         }

@@ -1,5 +1,6 @@
 import Env from './env';
 const MuiPath = Env.MuiPath;
+import * as rimraf from 'rimraf';
 
 import path from 'path';
 import { mkdir, readFileSync, writeFileSync } from 'fs';
@@ -83,6 +84,8 @@ ensureExists(outputDirectory, 0o744, err => {
         console.log(err);
         return;
     }
+
+    rimraf.sync(Path.join(outputDirectory, '*.json'));
 
     writeFileSync(path.resolve(outputDirectory, `colors.json`), JSON.stringify(colors));
 

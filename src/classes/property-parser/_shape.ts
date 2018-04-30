@@ -15,7 +15,7 @@ const factory = (propertyType: PropType$Shape) => {
         public executeParse() {
             const shapeArgs = this.resolveShape();
             if (shapeArgs.length) {
-                const dictSet = shapeArgs.map(arg => `Js.Dict.set(returnObj, "${arg.key}", toJsUnsafe(${arg.wrapJs(`${this._funcGet}(madeObj, "${arg.keySafe}")`)}));`).join('\n');
+                const dictSet = shapeArgs.map(arg => `Js.Dict.set(returnObj, "${arg.key}", MaterialUi_Helpers.toJsUnsafe(${arg.wrapJs(`${this._funcGet}(madeObj, "${arg.keySafe}")`)}));`).join('\n');
                 this._module = `
                     type ${this._typeName};
                     [@bs.obj] external ${this._funcMake} : (${shapeArgs.map(arg => {

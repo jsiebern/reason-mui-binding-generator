@@ -5,7 +5,6 @@ import * as rimraf from 'rimraf';
 import * as Console from './helpers/console';
 import GetComponents from './helpers/get-components';
 import Component from './classes/component';
-import ConstantStrings from './constant-strings';
 import RenderColors from './render-colors';
 
 const outputDirectory = Path.join(__dirname, '../', 'output');
@@ -36,19 +35,48 @@ const parseInit = () => {
         }
     });
 
-    const rendered = components.map(c => {
-        if (c == null) {
-            return '';
-        }
-        Console.info(`Rendering ${Console.colors.yellow}${c.name}${Console.colors.reset}`);
-        return c.render();
-    }).join('\n');
+    // Write color files
+    Object.keys(RenderColors.colorFiles).forEach(key => {
+        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `${key}.re`), RenderColors.colorFiles[key]);
+    });
 
-    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'MaterialUi.re'), ConstantStrings + RenderColors + rendered);
+    // Write component files
+    components.forEach(component => {
+        if (component == null) {
+            return;
+        }
+        Console.info(`Rendering ${Console.colors.yellow}${component.name}${Console.colors.reset}`);
+        const rendered = component.render();
+        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `MaterialUi_${component.name}.re`), rendered);
+    });
+
+    // Copy fixed modules
+    const items = Fs.readdirSync(Path.join(__dirname, 'fixed-modules'));
+    const itemsFiltered = items.filter(item => item.lastIndexOf('.re') === item.length - 3);
+    itemsFiltered.forEach(item => {
+        Fs.copyFileSync(Path.join(__dirname, 'fixed-modules', item), Path.join(__dirname, '../', 'output', 'reason', item));
+    });
+
+    // Write global file
+    // ${itemsFiltered.map(item => `module ${item.replace('MaterialUi_', '').replace('.re', '')} = ${item.replace('.re', '')};`).join('\n')}
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi.re'), `
+        ${components.map(component => component != null ? `module ${component.name} = MaterialUi_${component.name};` : '').join('\n')}
+        ${RenderColors.colorModule}
+        
+        module type WithStylesSafeTemplate = MaterialUi_WithStyles.WithStylesSafeTemplate;
+        module WithStylesSafe = MaterialUi_WithStyles.WithStylesSafe;
+        module Theme = MaterialUi_Theme;
+        module WithStyles = MaterialUi_WithStyles;
+    `);
 
     // Todo: Generate .rei files
-
 };
 
-rimraf.sync(Path.join(outputDirectory, '*.re'));
+
+if (Fs.existsSync(Path.join(outputDirectory, 'reason'))) {
+    rimraf.sync(Path.join(outputDirectory, 'reason', '*'));
+    Fs.rmdirSync(Path.join(outputDirectory, 'reason'));
+}
+Fs.mkdirSync(Path.join(outputDirectory, 'reason'));
+
 parseInit();

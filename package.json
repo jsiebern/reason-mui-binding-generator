@@ -5,7 +5,7 @@
     "scripts": {
         "bsb": "bsb -make-world;",
         "extract": "babel-node ./scripts/extract.js",
-        "parse": "ts-node ./src/index.ts; refmt --in-place output/*.re; bsb -make-world;",
+        "parse": "ts-node ./src/index.ts; refmt --in-place output/reason/*.re; bsb -make-world; ts-node ./src/helpers/clean-js-output.ts;",
         "ppx": "cd ./ppx-generator; yarn"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
