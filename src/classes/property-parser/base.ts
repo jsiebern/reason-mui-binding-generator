@@ -1,8 +1,10 @@
 import Property from './../property';
 import * as Plugins from './plugins';
+import PluginBase from './plugins/base';
 
 class PropertyParserBase {
     protected _property: Property;
+    protected _plugins: PluginBase[] = [];
 
     protected _reasonType: string = '';
     protected _jsType: string = '';
@@ -15,6 +17,8 @@ class PropertyParserBase {
     constructor(property: Property, emitToComponent: boolean | 'moduleOnly' = true) {
         this._property = property;
         this._emitToComponent = emitToComponent;
+
+        this._plugins = Object.keys(Plugins).map(pluginKey => new Plugins[pluginKey](this))
     }
 
     // Getters
@@ -48,22 +52,24 @@ class PropertyParserBase {
 
     // Parse functions
     public parse() {
+        this.runPlugins('beforeParse');
         this.executeParse();
+        this.runPlugins('beforeWrite');
         this.writeToComponent();
     }
 
     public executeParse() {}
 
-    private runPlugins() {
-        Object.keys(Plugins).map(pluginKey => Plugins[pluginKey]).forEach(pluginClass => {
-            const plugin = new pluginClass(this);
-            plugin.modify();
-        });
+    private runPlugins(when: 'beforeParse' | 'beforeWrite') {
+        if (when === 'beforeParse') {
+            this._plugins.forEach(plugin => plugin.beforeParse());
+        }
+        else {
+            this._plugins.forEach(plugin => plugin.beforeWrite());
+        }
     }
 
     protected writeToComponent() {
-        this.runPlugins();
-
         if (this._emitToComponent !== false) {
             if (this._valid && this._reasonType) {
                 let Make = `~${this.property.safeName}: ${this._reasonType},`;

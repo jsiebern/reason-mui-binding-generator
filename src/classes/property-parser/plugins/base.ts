@@ -7,7 +7,8 @@ abstract class PluginBase {
         this._parser = parser;
     }
 
-    public abstract modify(): void;
+    public abstract beforeParse(): void;
+    public abstract beforeWrite(): void;
 }
 
 export default PluginBase;
