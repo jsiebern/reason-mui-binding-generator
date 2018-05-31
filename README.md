@@ -13,9 +13,10 @@ Clone & rename the `env.example.js` in the `scripts` folder and enter the path t
 2. Install JS dependencies:
 
        yarn install
+       cd extract; yarn install
 
 ## How to (re)generate bindings
-    yarn extract
+    cd extract; yarn extract
     yarn parse
     
 ## Todo
