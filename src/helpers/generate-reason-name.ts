@@ -2,9 +2,11 @@ export const capitalize = (str: string) => str.replace(/\b\w/g, l => l.toUpperCa
 export const uncapitalize = (str: string) => str.replace(/\b\w/g, l => l.toLowerCase());
 
 export const isNumeric = (obj: any) => {
-    var realStringObj = obj && obj.toString();
+    const realStringObj = obj && obj.toString();
     return typeof obj !== 'object' && (realStringObj - parseFloat(realStringObj) + 1) >= 0;
-}
+};
+
+export const reservedNames = ['type', 'open', 'in', 'ref', 'to', 'for'];
 
 const GenerateReasonName = (str: string, toUpper: boolean = true) => {
     if (toUpper) {
@@ -20,8 +22,8 @@ const GenerateReasonName = (str: string, toUpper: boolean = true) => {
     while (str.indexOf('-') > -1) {
         str = str.replace('-', '_');
     }
-    if (['type', 'open', 'in', 'ref', 'to', 'for'].indexOf(str) > -1) {
-        str = `_${str}`;
+    if (reservedNames.indexOf(str) > -1) {
+        str = `${str}_`;
     }
 
     if (isNumeric(str)) {

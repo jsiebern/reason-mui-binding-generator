@@ -24,7 +24,7 @@ module WithStylesSafe = (S: WithStylesSafeTemplate) => {
   };
   /* Imported from MUI */
   type withStylesComponent('a) = (. 'a) => ReasonReact.reactClass;
-  [@bs.module "material-ui/styles"]
+  [@bs.module "@material-ui/core/styles"]
   external withStylesExt : 'styles => withStylesComponent('component) = "withStyles";
   let createStylesWrapper = styles => withStylesExt(styles);
   /* Generating the Wrapper */
@@ -77,7 +77,8 @@ let innerMake = (~render, ~classes: Js.t({..}), _children) => {
 
 type withStylesComponent('a) = (. 'a) => ReasonReact.reactClass;
 
-[@bs.module "material-ui/styles"] external withStylesExt : 'styles => withStylesComponent('component) = "withStyles";
+[@bs.module "@material-ui/core/styles"]
+external withStylesExt : 'styles => withStylesComponent('component) = "withStyles";
 
 let createStylesWrapper = styles => withStylesExt(styles);
 

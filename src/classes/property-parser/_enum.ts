@@ -59,7 +59,7 @@ const factory = (propertyType: PropType$Enum) => {
                 this._wrapJs = (name) => `${enumName}ToJs(${name})`;
             }
             else {
-                this._wrapJs = (name) => `Js.Option.map([@bs] (v => ${enumName}ToJs(v)), ${name})`;
+                this._wrapJs = (name) => `${name} |. Belt.Option.map((v => ${enumName}ToJs(v)))`;
             }
         }
     }

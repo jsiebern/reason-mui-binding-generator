@@ -28,10 +28,10 @@ const factory = (propertyType: PropType$ArrayOf) => {
 
                         reasonType = `array(${resolvedType.reasonType})`;
                         if (this.property.signature.required) {
-                            this._wrapJs = (name) => `Js.Array.map(item => MaterialUi_Helpers.toJsUnsafe(${resolvedType.wrapJs('item')}), ${name})`;
+                            this._wrapJs = (name) => `${name} |. Belt.Array.map(item => MaterialUi_Helpers.toJsUnsafe(${resolvedType.wrapJs('item')}))`;
                         }
                         else {
-                            this._wrapJs = (name) => `Js.Option.map([@bs] ((v) => Js.Array.map(item => MaterialUi_Helpers.toJsUnsafe(${resolvedType.wrapJs('item')}), v)), ${name})`;
+                            this._wrapJs = (name) => `${name} |. Belt.Option.map((v) => v |. Belt.Array.map(item => MaterialUi_Helpers.toJsUnsafe(${resolvedType.wrapJs('item')})))`;
                         }
                     }
                 }

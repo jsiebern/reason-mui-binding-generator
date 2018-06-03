@@ -30,7 +30,7 @@ const factory = (propertyType: PropType$Primitive) => {
                         this._wrapJs = (name) => `MaterialUi_Helpers.unwrapValue(${name})`;
                     }
                     else {
-                        this._wrapJs = (name) => `Js.Option.map([@bs] ((v) => MaterialUi_Helpers.unwrapValue(v)), ${name})`;
+                        this._wrapJs = (name) => `${name} |. Belt.Option.map((v) => MaterialUi_Helpers.unwrapValue(v))`;
                     }
                     break;
                 case 'int':

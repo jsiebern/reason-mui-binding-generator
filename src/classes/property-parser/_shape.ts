@@ -7,40 +7,80 @@ import { generateAny } from './helpers';
 const factory = (propertyType: PropType$Shape) => {
     return class ShapeParser extends Base {
         private _propertyType: PropType$Shape = propertyType;
-        private _funcMake = `make${upperFirst(this.property.safeName)}`;
-        private _funcConvert = `convert${upperFirst(this.property.safeName)}`;
-        private _funcGet = `getFrom${upperFirst(this.property.safeName)}`;
-        private _typeName = `type${upperFirst(this.property.safeName)}`;
+        private _moduleName = upperFirst(this.property.safeName);
 
         public executeParse() {
             const shapeArgs = this.resolveShape();
             if (shapeArgs.length) {
-                const dictSet = shapeArgs.map(arg => `Js.Dict.set(returnObj, "${arg.key}", MaterialUi_Helpers.toJsUnsafe(${arg.wrapJs(`${this._funcGet}(madeObj, "${arg.keySafe}")`)}));`).join('\n');
                 this._module = `
-                    type ${this._typeName};
-                    [@bs.obj] external ${this._funcMake} : (${shapeArgs.map(arg => {
-                        let makeProps = `~${arg.keySafe}: ${arg.jsType ? arg.jsType : arg.type.indexOf('=>') > -1 ? `([@bs] ${arg.type})` : arg.type}`;
-                        if (!arg.required) {
-                            makeProps +='=?';
-                        }
-                        return makeProps;
-                    }).join(',')}, unit) => ${this._typeName} = "";
-                    
-                    [@bs.get_index] external ${this._funcGet} : (${this._typeName}, string) => 'a = "";
-                    let ${this._funcConvert} = (madeObj: ${this.property.signature.required ? this._typeName : `option(${this._typeName})`}) => {
-                        let returnObj: Js.Dict.t(string) = Js.Dict.empty();
-                        ${this.property.signature.required ? dictSet : `
-                            switch (madeObj) {
-                                | Some(madeObj) => { ${dictSet} (); }
-                                | None => ()
-                            };
-                        `}
-                        ${this.property.signature.required ? 'returnObj;' : 'Some(returnObj);'}
+                    module ${this._moduleName} {
+                        [@bs.deriving abstract]
+                        type t = {
+                            ${shapeArgs.map(arg => `
+                                ${!arg.required ? '[@bs.optional]' : ''}
+                                ${arg.key !== arg.keySafe ? `[@bs.as "${arg.key}"]` : ''}
+                                ${arg.keySafe}: ${arg.type}
+                            `).join(',')}
+                        };
+                        let make = t;
+
+                        let unwrap = (obj: ${this.property.signature.required ? 't' : 'option(t)'}) => {
+                            ${this.property.signature.required ? `
+                                let unwrappedMap = Js.Dict.empty();
+                                ${shapeArgs.map(arg => arg.required ? `
+                                    unwrappedMap
+                                        |. Js.Dict.set(
+                                            "${arg.key}",
+                                            ${arg.wrapJs(`obj |. ${arg.keySafe}`)}
+                                            |. MaterialUi_Helpers.toJsUnsafe
+                                        );
+                                ` : `
+                                    switch (${arg.wrapJs(`obj |. ${arg.keySafe}`)}) {
+                                        | Some(v) =>
+                                            unwrappedMap
+                                                |. Js.Dict.set(
+                                                    "${arg.key}",
+                                                    v
+                                                    |. MaterialUi_Helpers.toJsUnsafe
+                                                );
+                                        | None => ()    
+                                    };
+                                `).join('')}
+                                unwrappedMap;
+                            ` : `
+                                switch (obj) {
+                                    | Some(obj) =>
+                                        let unwrappedMap = Js.Dict.empty();
+                                        ${shapeArgs.map(arg => arg.required ? `
+                                            unwrappedMap
+                                                |. Js.Dict.set(
+                                                    "${arg.key}",
+                                                    ${arg.wrapJs(`obj |. ${arg.keySafe}`)}
+                                                    |. MaterialUi_Helpers.toJsUnsafe
+                                                );
+                                        ` : `
+                                            switch (${arg.wrapJs(`obj |. ${arg.keySafe}`)}) {
+                                                | Some(v) =>
+                                                    unwrappedMap
+                                                        |. Js.Dict.set(
+                                                            "${arg.key}",
+                                                            v
+                                                            |. MaterialUi_Helpers.toJsUnsafe
+                                                        );
+                                                | None => ()    
+                                            };
+                                        `).join('')}
+                                        Some(unwrappedMap);
+                                    | None => None
+                                };
+                            `}
+                            
+                        };
                     };
                 `;
 
-                this._wrapJs = (name) => `${this._funcConvert}(${name})`;
-                this._reasonType = this._typeName;
+                this._wrapJs = (name) => `${this._moduleName}.unwrap(${name})`;
+                this._reasonType = `${this._moduleName}.t`;
                 this._jsType = generateAny();
             }
             else {

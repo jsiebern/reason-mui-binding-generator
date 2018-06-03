@@ -18,19 +18,19 @@ const GenerateClassProp = (component: ComponentSignature) => {
                         fun
                         ${toString};
                     let to_obj = (listOfClasses) =>
-                    listOfClasses |> StdLabels.List.fold_left(
-                        ~f=(obj, classType) => {
+                    listOfClasses |. Belt.List.reduce(
+                        Js.Dict.empty(),
+                        (obj, classType) => {
                             switch classType {
                                 ${toClassname} => Js.Dict.set(obj, to_string(classType), className)
                             };
                             obj
                         },
-                        ~init=Js.Dict.empty()
                     );
                 };
             `;
         toMakeProps = '~classes: Js.Dict.t(string)=?,~style: ReactDOMRe.Style.t=?,';
-        toWrapJs = '~classes=?Js.Option.map([@bs] ((v) => Classes.to_obj(v)), classes),~style?,';
+        toWrapJs = '~classes=?Belt.Option.map(classes, (v) => Classes.to_obj(v)),~style?,';
         toMake = '~classes: option(Classes.t)=?,~style: option(ReactDOMRe.Style.t)=?,';
     }
 
