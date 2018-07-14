@@ -25,7 +25,7 @@
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-1": "^6.24.1",
-        "bs-platform": "~3.1.5",
+        "bs-platform": "^4.0.0",
         "doctrine": "^2.1.0",
         "fs": "^0.0.1-security",
         "next": "~6.0.3",

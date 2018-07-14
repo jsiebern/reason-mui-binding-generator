@@ -31,11 +31,11 @@ const factory = (propertyType: PropType$Shape) => {
                                     unwrappedMap
                                         |. Js.Dict.set(
                                             "${arg.key}",
-                                            ${arg.wrapJs(`obj |. ${arg.keySafe}`)}
+                                            ${arg.wrapJs(`obj |. ${arg.keySafe}Get`)}
                                             |. MaterialUi_Helpers.toJsUnsafe
                                         );
                                 ` : `
-                                    switch (${arg.wrapJs(`obj |. ${arg.keySafe}`)}) {
+                                    switch (${arg.wrapJs(`obj |. ${arg.keySafe}Get`)}) {
                                         | Some(v) =>
                                             unwrappedMap
                                                 |. Js.Dict.set(
@@ -55,11 +55,11 @@ const factory = (propertyType: PropType$Shape) => {
                                             unwrappedMap
                                                 |. Js.Dict.set(
                                                     "${arg.key}",
-                                                    ${arg.wrapJs(`obj |. ${arg.keySafe}`)}
+                                                    ${arg.wrapJs(`obj |. ${arg.keySafe}Get`)}
                                                     |. MaterialUi_Helpers.toJsUnsafe
                                                 );
                                         ` : `
-                                            switch (${arg.wrapJs(`obj |. ${arg.keySafe}`)}) {
+                                            switch (${arg.wrapJs(`obj |. ${arg.keySafe}Get`)}) {
                                                 | Some(v) =>
                                                     unwrappedMap
                                                         |. Js.Dict.set(

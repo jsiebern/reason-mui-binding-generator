@@ -9,3 +9,5 @@ scripts/env.js
 *.bs.js
 lib
 .idea
+
+_test
