@@ -74,8 +74,7 @@ const parseInit = () => {
 
 
 if (Fs.existsSync(Path.join(outputDirectory, 'reason'))) {
-    rimraf.sync(Path.join(outputDirectory, 'reason', '*'));
-    Fs.rmdirSync(Path.join(outputDirectory, 'reason'));
+    rimraf.sync(Path.join(outputDirectory, 'reason'));
 }
 Fs.mkdirSync(Path.join(outputDirectory, 'reason'));
 
