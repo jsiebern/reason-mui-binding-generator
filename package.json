@@ -5,7 +5,7 @@
     "scripts": {
         "bsb": "bsb -make-world;",
         "extract": "babel-node ./scripts/extract.js",
-        "parse": "ts-node --files ./src/index.ts; refmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
+        "parse": "ts-node --files ./src/index.ts; ./node_modules/bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
         "ppx": "cd ./ppx-generator; yarn"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
@@ -25,7 +25,7 @@
         "babel-preset-env": "^1.7.0",
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-1": "^6.24.1",
-        "bs-platform": "^4.0.1",
+        "bs-platform": "^4.0.5",
         "doctrine": "^2.1.0",
         "fs": "^0.0.1-security",
         "next": "~6.1.1",
@@ -33,7 +33,7 @@
         "path": "^0.12.7",
         "react": "^16.4.0",
         "react-docgen": "^2.21.0",
-        "reason-react": "~0.4.2",
+        "reason-react": "~0.5.3",
         "ts-node": "~7.0.0",
         "typescript": "^2.8.4"
     },

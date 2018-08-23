@@ -7,21 +7,21 @@ import Base from './base';
 import FunctionSignatureFactory from './_function';
 
 enum CallbackTypes {
-    ClipboardCallback = 'ReactEventRe.Clipboard.t',
-    CompositionCallback = 'ReactEventRe.Composition.t',
-    KeyboardCallback = 'ReactEventRe.Keyboard.t',
-    FocusCallback = 'ReactEventRe.Focus.t',
-    FormCallback = 'ReactEventRe.Form.t',
-    MouseCallback = 'ReactEventRe.Mouse.t',
-    SelectionCallback = 'ReactEventRe.Selection.t',
-    TouchCallback = 'ReactEventRe.Touch.t',
-    UICallback = 'ReactEventRe.UI.t',
-    WheelCallback = 'ReactEventRe.Wheel.t',
-    MediaCallback = 'ReactEventRe.Media.t',
-    ImageCallback = 'ReactEventRe.Image.t',
-    AnimationCallback = 'ReactEventRe.Animation.t',
-    TransitionCallback = 'ReactEventRe.Transition.t',
-    SyntheticCallback = 'ReactEventRe.Synthetic.t',
+    ClipboardCallback = 'ReactEvent.Clipboard.t',
+    CompositionCallback = 'ReactEvent.Composition.t',
+    KeyboardCallback = 'ReactEvent.Keyboard.t',
+    FocusCallback = 'ReactEvent.Focus.t',
+    FormCallback = 'ReactEvent.Form.t',
+    MouseCallback = 'ReactEvent.Mouse.t',
+    SelectionCallback = 'ReactEvent.Selection.t',
+    TouchCallback = 'ReactEvent.Touch.t',
+    UICallback = 'ReactEvent.UI.t',
+    WheelCallback = 'ReactEvent.Wheel.t',
+    MediaCallback = 'ReactEvent.Media.t',
+    ImageCallback = 'ReactEvent.Image.t',
+    AnimationCallback = 'ReactEvent.Animation.t',
+    TransitionCallback = 'ReactEvent.Transition.t',
+    SyntheticCallback = 'ReactEvent.Synthetic.t',
     GenericCallback = '\'genericCallback',
 }
 
@@ -167,7 +167,7 @@ const factory = (propertyType: PropType$Func) => {
             });
             parsed.tags = parsed.tags.filter(arg => arg.title === 'param' || arg.title === 'returns');
             let parsedArgs: any[] = [];
-            let parsedReturns: PropType|null = null;
+            let parsedReturns: PropType | null = null;
             const callback = getCallbackType(this.property.name);
 
             if (parsed.tags.length > 0) {
@@ -178,17 +178,17 @@ const factory = (propertyType: PropType$Func) => {
                     parsedReturns = isPropType(r) ? r : null;
                 } else {
                     parsedArgs = parsed.tags;
-                    parsedReturns =  { name: 'void' };
+                    parsedReturns = { name: 'void' };
                 }
 
                 if (isCallBackName(this.property.name)) {
                     if (callback !== CallbackTypes.GenericCallback) {
-                        parsedArgs = parsedArgs.map(arg => arg.name === 'event' ? {...arg, type: { ...arg.type, name: 'custom', reasonType: callback }} : arg);
+                        parsedArgs = parsedArgs.map(arg => arg.name === 'event' ? { ...arg, type: { ...arg.type, name: 'custom', reasonType: callback } } : arg);
                     }
                 }
 
                 // Convert numbers to int (usually are index id's)
-                parsedArgs = parsedArgs.map(arg => arg.type.name === 'number' ? { ...arg, type: { ...arg.type, name: 'int' }} : arg);
+                parsedArgs = parsedArgs.map(arg => arg.type.name === 'number' ? { ...arg, type: { ...arg.type, name: 'int' } } : arg);
 
                 if (parsedReturns != null) {
                     const functionSig: PropType$FunctionSignature = {
@@ -198,7 +198,7 @@ const factory = (propertyType: PropType$Func) => {
                         signature: {
                             arguments: parsedArgs.map(arg => {
                                 if (arg.type.type === 'OptionalType') {
-                                     arg.type.name = arg.type.expression.name;
+                                    arg.type.name = arg.type.expression.name;
                                 }
                                 if (arg.type.type === 'AllLiteral') {
                                     arg.type.name = 'any';
