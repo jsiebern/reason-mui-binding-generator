@@ -51,9 +51,10 @@ components.forEach(componentPath => {
     }
 
     reactAPI.name = path.parse(componentPath).name;
+    reactAPI.importName = path.parse(componentPath).name;
     reactAPI.styles = styles;
     reactAPI.filename = componentPath.replace(rootDirectory, '');
-    reactAPI.importPath = `@material-ui/core/${componentPath.replace(`${rootDirectory}/`, '').replace('.js', '')}`;
+    reactAPI.importPath = '@material-ui/core'; // `@material-ui/core/${componentPath.replace(`${rootDirectory}/`, '').replace('.js', '')}`;
 
     // Inheritance
     const inheritedComponentRegexp = /\/\/ @inheritedComponent (.*)/;
