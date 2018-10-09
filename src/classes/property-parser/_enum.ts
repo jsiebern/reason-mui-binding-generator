@@ -9,9 +9,9 @@ const factory = (propertyType: PropType$Enum) => {
         private _isNumeric: null | boolean = null;
 
         public executeParse() {
-            const enumKeys = this._propertyType.value.filter(e => !e.computed).map(e => e.value.substr(0, 1) === '\'' ? e.value.substr(1, e.value.length - 2) : e.value);
+            const enumKeys = this._propertyType.value.filter(e => !e.computed).map(e => e.value.substr(0, 1) === '\'' || e.value.substr(0, 1) === '"' ? e.value.substr(1, e.value.length - 2) : e.value);
             const enumValues = this._propertyType.value.filter(e => !e.computed).map(e => {
-                if (e.value.substr(0, 1) === '\'') {
+                if (e.value.substr(0, 1) === '\'' || e.value.substr(0, 1) === '"') {
                     this._isNumeric = false;
                     return e.value.substr(1, e.value.length - 2);
                 }
