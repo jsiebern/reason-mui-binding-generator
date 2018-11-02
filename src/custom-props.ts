@@ -139,7 +139,46 @@ export default {
             description: '-',
         },
     },
-    IconButton: {
-
-    },
+    Grid: {
+        xsAuto: {
+            type: {
+                name: 'bool',
+            },
+            required: false,
+            description: '-',
+            reasonOnly: true,
+        },
+        smAuto: {
+            type: {
+                name: 'bool',
+            },
+            required: false,
+            description: '-',
+            reasonOnly: true,
+        },
+        mdAuto: {
+            type: {
+                name: 'bool',
+            },
+            required: false,
+            description: '-',
+            reasonOnly: true,
+        },
+        lgAuto: {
+            type: {
+                name: 'bool',
+            },
+            required: false,
+            description: '-',
+            reasonOnly: true,
+        },
+        xlAuto: {
+            type: {
+                name: 'bool',
+            },
+            required: false,
+            description: '-',
+            reasonOnly: true,
+        },
+    }
 };

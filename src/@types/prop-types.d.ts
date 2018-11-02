@@ -4,6 +4,7 @@ declare interface PropType$Primitive {
 
 declare interface PropType$Custom {
     name: 'custom',
+    raw?: string,
     reasonType: string,
     jsType?: string,
     wrapJs?: (name: string) => string,

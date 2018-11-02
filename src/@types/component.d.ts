@@ -1,6 +1,8 @@
 declare interface PropSignature {
     type?: PropType,
+    raw?: string,
     required: boolean,
+    reasonOnly?: boolean,
     description: string | '@ignore',
     defaultValue: {
         value: string,

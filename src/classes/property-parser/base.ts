@@ -27,7 +27,7 @@ class PropertyParserBase {
         return this._property;
     }
 
-    public  get component() {
+    public get component() {
         return this._property.component;
     }
 
@@ -51,6 +51,10 @@ class PropertyParserBase {
         return this._wrapJs;
     }
 
+    public set wrapJs(newValue) {
+        this._wrapJs = newValue;
+    }
+
     // Parse functions
     public parse() {
         this.runPlugins('beforeParse');
@@ -59,7 +63,7 @@ class PropertyParserBase {
         this.writeToComponent();
     }
 
-    public executeParse() {}
+    public executeParse() { }
 
     private runPlugins(when: 'beforeParse' | 'beforeWrite') {
         if (when === 'beforeParse') {
@@ -91,8 +95,10 @@ class PropertyParserBase {
 
                 if (this._emitToComponent !== 'moduleOnly') {
                     this.component.addToSection('Make', Make);
-                    this.component.addToSection('MakeProps', MakeProps);
-                    this.component.addToSection('WrapJs', WrapJs);
+                    if (this.property.signature.reasonOnly !== true) {
+                        this.component.addToSection('MakeProps', MakeProps);
+                        this.component.addToSection('WrapJs', WrapJs);
+                    }
                 }
                 this.component.addToSection('Module', this._module);
             }
