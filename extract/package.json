@@ -47,7 +47,7 @@
     "warning": "^4.0.2"
   },
   "scripts": {
-    "copy": "rimraf ./core; cp -R /Users/jonathansiebern/git/_fork/material-ui/packages/material-ui/src ./core",
+    "copy": "rimraf ./core; cp -R ../../material-ui/packages/material-ui/src ./core",
     "extract": "babel-node ./src/extract.js"
   },
   "dependencies": {
@@ -56,7 +56,7 @@
     "babel-plugin-syntax-exponentiation-operator": "^6.13.0",
     "classnames": "^2.2.6",
     "react": "^16.5.2",
-    "react-docgen": "^2.21.0",
+    "react-docgen": "^3.0.0-rc.2",
     "react-dom": "^16.5.2"
   }
 }
