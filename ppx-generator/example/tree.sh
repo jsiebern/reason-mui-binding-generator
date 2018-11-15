@@ -1,1 +1,0 @@
-ocamlc -pp "refmt --print binary" -dparsetree -impl "$1"

@@ -1,1 +1,0 @@
-ocamlc -pp "refmt --print binary" -dsource -ppx ./../ppx_withStyles.sh -impl "$1"

@@ -9,5 +9,6 @@ scripts/env.js
 *.bs.js
 lib
 .idea
+.bsb.lock
 
 _test
