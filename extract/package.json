@@ -47,7 +47,7 @@
     "warning": "^4.0.2"
   },
   "scripts": {
-    "copy": "rimraf ./core; cp -R ../../material-ui/packages/material-ui/src ./core",
+    "copy": "rimraf ./core; cp -R ../../_fork/material-ui/packages/material-ui/src ./core",
     "extract": "babel-node ./src/extract.js"
   },
   "dependencies": {

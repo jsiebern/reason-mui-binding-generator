@@ -6,6 +6,7 @@ import * as Console from './helpers/console';
 import GetComponents from './helpers/get-components';
 import Component from './classes/component';
 import RenderColors from './render-colors';
+import RenderTheme from './render-theme';
 
 const outputDirectory = Path.join(__dirname, '../', 'output');
 const parseInit = () => {
@@ -57,6 +58,10 @@ const parseInit = () => {
         Fs.copyFileSync(Path.join(__dirname, 'fixed-modules', item), Path.join(__dirname, '../', 'output', 'reason', item));
     });
 
+    const theme = RenderTheme();
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_Theme.re'), theme.theme);
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_ThemeOptions.re'), theme.themeOptions);
+
     // Write global file
     // ${itemsFiltered.map(item => `module ${item.replace('MaterialUi_', '').replace('.re', '')} = ${item.replace('.re', '')};`).join('\n')}
     Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi.re'), `
@@ -66,6 +71,7 @@ const parseInit = () => {
         module type WithStylesSafeTemplate = MaterialUi_WithStyles.WithStylesSafeTemplate;
         module WithStylesSafe = MaterialUi_WithStyles.WithStylesSafe;
         module Theme = MaterialUi_Theme;
+        module ThemeOptions = MaterialUi_ThemeOptions;
         module WithStyles = MaterialUi_WithStyles;
     `);
 

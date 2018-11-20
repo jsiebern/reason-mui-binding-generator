@@ -5,7 +5,8 @@
     "scripts": {
         "bsb": "bsb -make-world;",
         "parse": "ts-node --files ./src/index.ts; ./node_modules/.bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
-        "ppx": "cd ./ppx-generator; yarn"
+        "test": "ts-node --files ./src/test.ts",
+        "theme": "ts-node --files ./interface-to-reason/index.ts"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",
     "author": "Jonathan Siebern <jsiebern88@gmail.com>",
@@ -25,10 +26,12 @@
         "react": "^16.3.0",
         "reason-react": "^0.5.3",
         "ts-node": "~7.0.0",
+        "ts-simple-ast": "^19.0.0",
         "typescript": "^2.8.4"
     },
     "dependencies": {
         "@material-ui/core": "^3.3.2",
-        "react-dom": "^16.3.0"
+        "react-dom": "^16.3.0",
+        "reason": "^3.3.4"
     }
 }
