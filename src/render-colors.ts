@@ -14,7 +14,7 @@ const RenderColors = () => {
     const colors = GetColors();
     const colorFiles = Object.keys(colors).reduce((obj, colorName) => {
         return {...obj, [`MaterialUi_Color_${capitalize(colorName)}`]:
-                `[@bs.module "@material-ui/core/colors/${colorName}"] external ${colorName}Ext: Js.Dict.t(string) = "default";
+                `[@bs.module "@material-ui/core/colors"] external ${colorName}Ext: Js.Dict.t(string) = "${colorName}";
                 ${Object.keys(colors[colorName]).map(key => `
                     let ${isNumeric(key) ? 'c' : ''}${uncapitalize(key)}: string = Js.Dict.unsafeGet(${colorName}Ext, "${key}");
                 `).join('\n')}`

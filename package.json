@@ -5,6 +5,9 @@
     "scripts": {
         "bsb": "bsb -make-world;",
         "parse": "ts-node --files ./src/index.ts; ./node_modules/.bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
+        "parse-icons": "ts-node --files ./src/render-icons.ts; ./node_modules/.bin/bsrefmt --in-place output/reason-icons/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
+        "t": "for f in output/reason-icons/*.re; do ./node_modules/.bin/bsrefmt --in-place \"$f\"; done",
+        "t2": "echo output/reason-icons/*.re | xargs -n 100 ./node_modules/.bin/bsrefmt --in-place",
         "test": "ts-node --files ./src/test.ts",
         "theme": "ts-node --files ./interface-to-reason/index.ts"
     },

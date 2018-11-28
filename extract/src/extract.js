@@ -8,7 +8,6 @@ import getStylesCreator from './../core/styles/getStylesCreator';
 import createMuiTheme from './../core/styles/createMuiTheme';
 import * as colors from './../core/colors';
 
-
 import findComponents from './find-components';
 import ensureExists from './ensure-folder-exists';
 
@@ -89,7 +88,23 @@ ensureExists(outputDirectory, 0o744, err => {
         return;
     }
 
-    writeFileSync(path.resolve(outputDirectory, `colors.json`), JSON.stringify(colors));
+    // Icons
+    const regex = /export { default as ([a-zA-Z]*) } from '[a-zA-Z./]*';/gm;
+    let iconArray = [];
+    const str = readFileSync(path.join(__dirname, '../core', 'icons.js'), 'utf-8');
+    let m;
+    while ((m = regex.exec(str)) !== null) {
+        // This is necessary to avoid infinite loops with zero-width matches
+        if (m.index === regex.lastIndex) {
+            regex.lastIndex++;
+        }
 
+        iconArray.push(m[1]);
+    }
+
+    writeFileSync(path.resolve(outputDirectory, `icons.json`), JSON.stringify(iconArray));
+    console.log('Extracted JSON for Icons');
+
+    writeFileSync(path.resolve(outputDirectory, `colors.json`), JSON.stringify(colors));
     console.log('Extracted JSON for Colors');
 });

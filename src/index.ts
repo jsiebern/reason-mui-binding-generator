@@ -16,8 +16,7 @@ const parseInit = () => {
             const json = JSON.parse(jsonString);
             Console.info(`Parsing ${Console.colors.yellow}${json.name || json.displayName}${Console.colors.reset}`);
             return new Component(jsonString);
-        }
-        catch (e) {
+        } catch (e) {
             console.log(e);
             Console.error(e);
             Console.error(jsonString);
@@ -38,7 +37,7 @@ const parseInit = () => {
 
     // Write color files
     Object.keys(RenderColors.colorFiles).forEach(key => {
-        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `${key}.re`), RenderColors.colorFiles[key]);
+        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `${key}.re`), RenderColors.colorFiles[ key ]);
     });
 
     // Write component files
@@ -77,7 +76,6 @@ const parseInit = () => {
 
     // Todo: Generate .rei files
 };
-
 
 if (Fs.existsSync(Path.join(outputDirectory, 'reason'))) {
     rimraf.sync(Path.join(outputDirectory, 'reason'));
