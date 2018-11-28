@@ -180,5 +180,16 @@ export default {
             description: '-',
             reasonOnly: true,
         },
-    }
+    },
+    MuiThemeProvider: {
+        xlAuto: {
+            type: {
+                name: 'custom',
+                reasonType: 'MaterialUi_Theme.t',
+                jsType: 'MaterialUi_Theme.t',
+            },
+            required: true,
+            description: '-',
+        },
+    },
 };

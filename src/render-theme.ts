@@ -18,4 +18,4 @@ const RenderTheme = () => {
     };
 }
 
-export default RenderTheme;
+export default RenderTheme();

@@ -6,6 +6,7 @@ import * as Console from './helpers/console';
 import GetComponents from './helpers/get-components';
 import Component from './classes/component';
 import RenderColors from './render-colors';
+import RenderIcons from './render-icons';
 import RenderTheme from './render-theme';
 
 const outputDirectory = Path.join(__dirname, '../', 'output');
@@ -37,8 +38,11 @@ const parseInit = () => {
 
     // Write color files
     Object.keys(RenderColors.colorFiles).forEach(key => {
-        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `${key}.re`), RenderColors.colorFiles[ key ]);
+        Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `${key}.re`), RenderColors.colorFiles[key]);
     });
+
+    // Write Icon Type
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `MaterialUi_IconsNames.re`), RenderIcons);
 
     // Write component files
     components.forEach(component => {
@@ -57,9 +61,8 @@ const parseInit = () => {
         Fs.copyFileSync(Path.join(__dirname, 'fixed-modules', item), Path.join(__dirname, '../', 'output', 'reason', item));
     });
 
-    const theme = RenderTheme();
-    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_Theme.re'), theme.theme);
-    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_ThemeOptions.re'), theme.themeOptions);
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_Theme.re'), RenderTheme.theme);
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', 'MaterialUi_ThemeOptions.re'), RenderTheme.themeOptions);
 
     // Write global file
     // ${itemsFiltered.map(item => `module ${item.replace('MaterialUi_', '').replace('.re', '')} = ${item.replace('.re', '')};`).join('\n')}
@@ -72,6 +75,15 @@ const parseInit = () => {
         module Theme = MaterialUi_Theme;
         module ThemeOptions = MaterialUi_ThemeOptions;
         module WithStyles = MaterialUi_WithStyles;
+    `);
+
+    // Append create theme function
+    const themePath = Path.join(outputDirectory, 'reason', 'MaterialUi_Theme.re');
+    const themeContents = Fs.readFileSync(themePath);
+    Fs.writeFileSync(themePath, `
+        ${themeContents}
+
+        [@bs.module "@material-ui/core/styles"] external create: MaterialUi_ThemeOptions.t => t = "createMuiTheme";
     `);
 
     // Todo: Generate .rei files

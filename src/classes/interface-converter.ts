@@ -14,6 +14,7 @@ class Converter {
     private readonly interfaceName: string;
 
     private interfaces: InterfaceDeclaration[] = [];
+    private rendered: string[] = [];
 
     constructor(sourceFile: SourceFile, interfaceName: string) {
         this.sourceFile = sourceFile;
@@ -144,6 +145,8 @@ class Converter {
                             ${this.safePropertyName(`${property.getName()}`)}: ${typeof interfaceTypeOverrides[i.getName()] !== 'undefined' ? interfaceTypeOverrides[i.getName()] : this.getReasonTypeForType(property.getType())},
                         `).join("\n")}
                     };
+
+                    let make = t;
                 ` : `type t;`}
             };
         `;
@@ -176,6 +179,8 @@ class Converter {
             ${this.interfaces.map(i => this.interfaceToModule(i)).join("\n")}
 
             type t = ${baseInterface.getName()}.t;
+
+            let make = ${baseInterface.getName()}.t;
         `;
         return printRE(parseRE(composed));
     }

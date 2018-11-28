@@ -755,6 +755,11 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/json-schema@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.1.tgz#fcaa655260285b8061850789f8268c51a4ec8ee1"
+  integrity sha512-NVQEMviDWjuen3UW+mU1J6fZ0WhOfG1yRce/2OTcbaz+fgmTw2cahx6N2wh0Yl+a+hg2UZj/oElZmtULWyGIsA==
+
 "@types/jss@^9.5.6":
   version "9.5.7"
   resolved "https://registry.yarnpkg.com/@types/jss/-/jss-9.5.7.tgz#fa57a6d0b38a3abef8a425e3eb6a53495cb9d5a0"
