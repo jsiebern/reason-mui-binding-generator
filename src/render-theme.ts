@@ -1,20 +1,39 @@
 import * as Path from 'path';
-import { Project } from 'ts-simple-ast';
+import * as Fs from 'fs';
 
-import Converter from './classes/interface-converter';
+import Convert from '@jsiebern/json-schema-to-reason';
 
 const RenderTheme = () => {
-    const project = new Project();
+    const path = Path.resolve(__dirname, '../', 'output/json');
+    const themePath = Path.join(path, 'theme.json');
+    const themeOptionsPath = Path.join(path, 'theme-options.json');
 
-    const stylesPath = Path.join(__dirname, '../', 'extract/core/styles');
-    project.addExistingSourceFiles(Path.join(stylesPath, '**/*.d.ts'));
-    project.resolveSourceFileDependencies();
+    const theme = Fs.readFileSync(themePath, 'utf-8');
+    const themeOptions = Fs.readFileSync(themeOptionsPath, 'utf-8');
 
-    const themeConverter = new Converter(project.getSourceFileOrThrow('createMuiTheme.d.ts'), 'Theme');
-    const themeOptionsConverter = new Converter(project.getSourceFileOrThrow('createMuiTheme.d.ts'), 'ThemeOptions');
+    const options = {
+        replaceRefs: [
+            {
+                re: /CSSProperties/m,
+                replaceWith: 'ReactDOMRe.Style.t',
+            },
+            {
+                re: /Partial.*([a-zA-Z]*)Props/m,
+                replaceWith: 'Js.t({..})',
+            },
+            {
+                re: /React\.>/m,
+                replaceWith: 'Js.t({..})',
+            },
+        ],
+    };
+
+    const themeConvert = Convert(theme, 'Theme', options);
+    const themeOptionsConvert = Convert(themeOptions, 'ThemeOptions', options);
+
     return {
-        theme: themeConverter.parse(),
-        themeOptions: themeOptionsConverter.parse(),
+        theme: themeConvert ? themeConvert.refmt : '',
+        themeOptions: themeOptionsConvert ? themeOptionsConvert.refmt : '',
     };
 }
 

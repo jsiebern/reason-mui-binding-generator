@@ -1,8 +1,13 @@
 {
     "include": [
-        "src"
+        "./src/**/*",
+        "./node_modules/@jsiebern/json-schema-to-reason/**/*"
     ],
     "compilerOptions": {
+        "paths": {
+            "@jsiebern/json-schema-to-reason": ["node_modules/@jsiebern/json-schema-to-reason"]
+        },
+        "baseUrl": ".",
         "outDir": "./build/",
         "module": "commonjs",
         "target": "es5",
@@ -23,10 +28,10 @@
         "suppressImplicitAnyIndexErrors": true,
         "noUnusedLocals": true,
         "experimentalDecorators": true,
-        "downlevelIteration": true
-    },
-    "exclude": [
-        "node_modules",
-        "build"
-    ]
+        "downlevelIteration": true,
+        "typeRoots": [
+            "node_modules/@types",
+            "src/@types"
+        ]
+    }
 }

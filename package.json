@@ -4,7 +4,7 @@
     "description": "Reason binding generator for material-ui v1",
     "scripts": {
         "bsb": "bsb -make-world;",
-        "parse": "ts-node --files ./src/index.ts; ./node_modules/.bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
+        "parse": "ts-node --project ./tsconfig.json --files ./src/index.ts; ./node_modules/.bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
         "parse-theme": "ts-node --files ./src/index-theme.ts; ./node_modules/.bin/bsrefmt --in-place output/*.re;",
         "theme": "cd ../_fork/material-ui; typescript-json-schema ./tsconfig.json Theme --ignoreErrors --excludePrivate --required -o test.json"
     },
@@ -27,10 +27,10 @@
         "react": "^16.3.0",
         "reason-react": "^0.5.3",
         "ts-node": "~7.0.0",
-        "ts-simple-ast": "^19.0.0",
         "typescript": "^2.8.4"
     },
     "dependencies": {
+        "@jsiebern/json-schema-to-reason": "0.0.6",
         "@material-ui/core": "^3.3.2",
         "react-dom": "^16.3.0",
         "reason": "^3.3.4"

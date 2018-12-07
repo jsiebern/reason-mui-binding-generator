@@ -182,11 +182,11 @@ export default {
         },
     },
     MuiThemeProvider: {
-        xlAuto: {
+        theme: {
             type: {
                 name: 'custom',
-                reasonType: 'MaterialUi_Theme.t',
-                jsType: 'MaterialUi_Theme.t',
+                reasonType: 'MaterialUi_Theme.t(_)',
+                jsType: 'MaterialUi_Theme.t(_)',
             },
             required: true,
             description: '-',
