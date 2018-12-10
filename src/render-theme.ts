@@ -19,11 +19,15 @@ const RenderTheme = () => {
             },
             {
                 re: /Partial.*([a-zA-Z]*)Props/m,
-                replaceWith: 'Js.t({..})',
+                replaceWith: 'Js.Json.t',
             },
             {
                 re: /React\.>/m,
-                replaceWith: 'Js.t({..})',
+                replaceWith: 'Js.Json.t',
+            },
+            {
+                re: /HTML.*Element/m,
+                replaceWith: 'ReasonReact.reactElement',
             },
         ],
     };

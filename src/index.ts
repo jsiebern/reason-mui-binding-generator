@@ -83,7 +83,7 @@ const parseInit = () => {
     Fs.writeFileSync(themePath, `
         ${themeContents}
 
-        [@bs.module "@material-ui/core/styles"] external create: MaterialUi_ThemeOptions.t(_) => t(_) = "createMuiTheme";
+        [@bs.module "@material-ui/core/styles"] external create: MaterialUi_ThemeOptions.t => t = "createMuiTheme";
     `);
 
     // Todo: Generate .rei files

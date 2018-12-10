@@ -185,8 +185,8 @@ export default {
         theme: {
             type: {
                 name: 'custom',
-                reasonType: 'MaterialUi_Theme.t(_)',
-                jsType: 'MaterialUi_Theme.t(_)',
+                reasonType: 'MaterialUi_Theme.t',
+                jsType: 'MaterialUi_Theme.t',
             },
             required: true,
             description: '-',
