@@ -74,6 +74,7 @@ const parseInit = () => {
         module WithStylesSafe = MaterialUi_WithStyles.WithStylesSafe;
         module Theme = MaterialUi_Theme;
         module ThemeOptions = MaterialUi_ThemeOptions;
+        module ThemeProvider = MaterialUi_ThemeProvider;
         module WithStyles = MaterialUi_WithStyles;
     `);
 

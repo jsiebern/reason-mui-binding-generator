@@ -14,7 +14,7 @@ const RenderTheme = () => {
     const options = {
         replaceRefs: [
             {
-                re: /CSSProperties/m,
+                re: /CSSProperties$/m,
                 replaceWith: 'ReactDOMRe.Style.t',
             },
             {
