@@ -5,7 +5,6 @@
     "scripts": {
         "bsb": "bsb -make-world;",
         "parse": "ts-node --project ./tsconfig.json --files ./src/index.ts; ./node_modules/.bin/bsrefmt --in-place output/reason/*.re; bsb -make-world; ts-node --files ./src/helpers/clean-js-output.ts;",
-        "parse-theme": "ts-node --files ./src/index-theme.ts; ./node_modules/.bin/bsrefmt --in-place output/*.re;",
         "theme": "cd ../_fork/material-ui; typescript-json-schema ./tsconfig.json Theme --ignoreErrors --excludePrivate --required -o test.json"
     },
     "repository": "git@github.com:jsiebern/reason-mui-binding-generator.git",

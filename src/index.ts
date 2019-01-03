@@ -56,7 +56,7 @@ const parseInit = () => {
 
     // Copy fixed modules
     const items = Fs.readdirSync(Path.join(__dirname, 'fixed-modules'));
-    const itemsFiltered = items.filter(item => item.lastIndexOf('.re') === item.length - 3);
+    const itemsFiltered = items.filter(item => item.lastIndexOf('.re') === item.length - 3 || item.lastIndexOf('.js') === item.length - 3);
     itemsFiltered.forEach(item => {
         Fs.copyFileSync(Path.join(__dirname, 'fixed-modules', item), Path.join(__dirname, '../', 'output', 'reason', item));
     });
