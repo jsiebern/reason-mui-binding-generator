@@ -26,6 +26,10 @@ const RenderTheme = () => {
                 replaceWith: 'Js.Json.t',
             },
             {
+                re: /ComponentsProps/m,
+                replaceWith: 'Js.Json.t',
+            },
+            {
                 re: /HTML.*Element/m,
                 replaceWith: 'ReasonReact.reactElement',
             },

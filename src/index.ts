@@ -42,7 +42,7 @@ const parseInit = () => {
     });
 
     // Write Icon Type
-    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `MaterialUi_IconsNames.re`), RenderIcons);
+    Fs.writeFileSync(Path.join(__dirname, '../', 'output', 'reason', `MaterialUi_Icons.re`), RenderIcons);
 
     // Write component files
     components.forEach(component => {
@@ -76,6 +76,7 @@ const parseInit = () => {
         module ThemeOptions = MaterialUi_ThemeOptions;
         module ThemeProvider = MaterialUi_ThemeProvider;
         module WithStyles = MaterialUi_WithStyles;
+        module Icons = MaterialUi_Icons;
     `);
 
     // Append create theme function
