@@ -1,3 +1,9 @@
+---------------------
+### THIS REPO HAS BEEN MOVED TO https://github.com/jsiebern/bs-material-ui/tree/master/tools/binding-generator
+---------------------
+
+
+
 # Reason Mui Binding Generator
 
 This library generates bindings for
